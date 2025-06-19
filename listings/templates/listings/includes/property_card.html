@@ -1,0 +1,19 @@
+<div class="col-md-4 mb-4">
+    <div class="card shadow-sm h-100">
+        {% if property.image %}
+            <img src="{{ property.image.url }}" class="card-img-top" alt="{{ property.title }}" style="max-height: 200px; object-fit: cover;">
+        {% endif %}
+        <div class="card-body">
+            <h5 class="card-title">{{ property.title }}</h5>
+            <p class="card-text text-muted">{{ property.city }}, {{ property.country }}</p>
+            <a href="{% url 'property_detail' property.pk %}" class="btn btn-green btn-sm">Подробнее</a>
+            {% if request.resolver_match.url_name == "dashboard" %}
+                <div class="mt-2">
+                    <a href="{% url 'edit_property' property.pk %}" class="btn btn-sm btn-outline-secondary me-2">✏️ Редактировать</a>
+                    <a href="{% url 'delete_property' property.pk %}" class="btn btn-sm btn-outline-danger">🗑️ Удалить</a>
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+</div>

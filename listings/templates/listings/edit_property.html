@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Редактировать объявление{% endblock %}
+{% block content %}
+<h2>Редактировать объект</h2>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-green">💾 Сохранить</button>
+    <a href="{% url 'dashboard' %}" class="btn btn-secondary">Отмена</a>
+</form>
+{% endblock %}
