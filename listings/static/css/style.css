@@ -1,0 +1,30 @@
+        .property-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 15px;
+        }
+        .gallery img {
+            width: 100%;
+            border-radius: 12px;
+        }
+        .price-box {
+            background-color: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+        }
+        .btn-green {
+            background-color: #00c97b;
+            color: #fff;
+            border: none;
+        }
+        .btn-green:hover {
+            background-color: #00b06e;
+        }
+        .info-label {
+            font-weight: 500;
+            color: #777;
+        }
+        .info-value {
+            font-weight: bold;
+        }
