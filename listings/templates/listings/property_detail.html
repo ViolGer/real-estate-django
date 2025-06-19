@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %}{{ property.title }} | Global Estate{% endblock %}
+
+{% block content %}
+<div class="property-container">
+    <a href="{% url 'property_list' %}" class="text-muted mb-3 d-inline-block">&larr; Вернуться к поиску</a>
+
+    <div class="row">
+        <div class="col-md-8">
+            <h2>{{ property.title }}</h2>
+            <div class="row g-2 gallery my-4">
+                {% if property.image %}
+                    <div class="col-12 mb-3">
+                        <img src="{{ property.image.url }}" alt="{{ property.title }}" class="img-fluid rounded border shadow-sm" style="max-height: 400px; object-fit: cover; width: 100%;">
+                    </div>
+                {% endif %}
+
+                {% for img in property.images.all %}
+                    <div class="col-6 col-md-4">
+                        <img src="{{ img.image.url }}" alt="{{ img.caption }}" class="img-thumbnail" style="height: 180px; object-fit: cover; width: 100%;">
+                    </div>
+                {% endfor %}
+            </div>
+
+
+            <h5 class="fw-bold">Описание</h5>
+            <p>{{ property.description }}</p>
+        </div>
+
+        <div class="col-md-4">
+            <div class="price-box mb-4">
+                <h3 class="fw-bold">${{ property.price }}</h3>
+                <p class="mb-2">{{ property.city }}, {{ property.country }}</p>
+
+                <div class="d-flex justify-content-between">
+                    <div class="info-label">Площадь</div>
+                    <div class="info-value">{{ property.area }} кв. м.</div>
+                </div>
+                <div class="d-flex justify-content-between mb-3">
+                    <div class="info-label">Цена/кв. м.</div>
+                    <div class="info-value">
+                        {% if property.price_per_m2 %}
+                            ${{ property.price_per_m2 }}
+                        {% else %}
+                            &mdash;
+                        {% endif %}
+                    </div>
+                </div>
+
+                <button class="btn btn-green w-100 mb-2">Показать телефон</button>
+                <button class="btn btn-outline-secondary w-100">Написать</button>
+            </div>
+
+            <div class="price-box">
+                <h6 class="fw-bold mb-2">Инвестиционная аналитика</h6>
+                <p class="small">
+                    Среднерыночная цена посуточной сдачи, заполняемости и RevPar (выручки на спальню)...
+                </p>
+                <button class="btn btn-green w-100 mb-2">Купить за $99</button>
+                <button class="btn btn-outline-secondary w-100">Посмотреть пример</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
