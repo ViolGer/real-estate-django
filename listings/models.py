@@ -1,5 +1,6 @@
 from django.db import models  # Импортируем модуль моделей Django
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import User
 
 def validate_image_size(image):
     max_size_mb = 5
@@ -38,6 +39,8 @@ class Property(models.Model):
 
     #площадь
     area = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
+
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='properties')
 
     def price_per_m2(self):
         if self.area and self.area > 0:

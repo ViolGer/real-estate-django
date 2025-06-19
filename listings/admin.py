@@ -15,7 +15,7 @@ class PropertyImageInline(admin.TabularInline):
 @admin.register(Property)
 class PropertyAdmin(admin.ModelAdmin):
     # Какие поля показывать в списке объектов
-    list_display = ('title', 'city', 'country', 'price', 'currency', 'is_available', 'created_at')
+    list_display = ('title', 'city', 'country', 'price', 'currency', 'is_available', 'created_at', 'owner')
     # Фильтры в правой части админки
     list_filter = ('country', 'city', 'is_available')
     # Поля, по которым можно искать через строку поиска

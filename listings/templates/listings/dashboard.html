@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Мой кабинет{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="mb-4">👤 Мои объявления</h2>
+
+    {% if properties %}
+        <div class="row">
+            {% for property in properties %}
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-sm">
+                        {% if property.image %}
+                            <img src="{{ property.image.url }}" class="card-img-top" alt="{{ property.title }}">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ property.title }}</h5>
+                            <p class="card-text text-muted">{{ property.city }}, {{ property.country }}</p>
+                            <a href="{% url 'property_detail' property.pk %}" class="btn btn-sm btn-outline-primary">Подробнее</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>У вас пока нет объявлений. Добавьте своё первое!</p>
+    {% endif %}
+</div>
+{% endblock %}

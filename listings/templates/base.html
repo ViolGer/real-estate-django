@@ -18,10 +18,11 @@
         <!-- 🔐 Блок приветствия и кнопок логина/выхода -->
         <div class="d-flex justify-content-end align-items-center py-3">
             {% if user.is_authenticated %}
-                <span class="me-2">👋 Привет, {{ user.username }}</span>
-                <a href="{% url 'logout' %}" class="btn btn-outline-secondary btn-sm">Выйти</a>
+                <a href="{% url 'dashboard' %}" class="btn btn-outline-dark me-2">Мой кабинет</a>
+                <a href="{% url 'logout' %}" class="btn btn-outline-danger">Выход</a>
             {% else %}
-                <a href="{% url 'login' %}" class="btn btn-primary btn-sm">Войти</a>
+                <a href="{% url 'login' %}" class="btn btn-outline-primary me-2">Вход</a>
+                <a href="{% url 'signup' %}" class="btn btn-primary">Регистрация</a>
             {% endif %}
         </div>
 
