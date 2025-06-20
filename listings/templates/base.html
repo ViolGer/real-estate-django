@@ -19,6 +19,7 @@
         <div class="d-flex justify-content-end align-items-center py-3">
             {% if user.is_authenticated %}
                 {% if request.resolver_match.url_name != "dashboard" %}
+                    <a href="{% url 'profile' %}" class="btn btn-outline-dark me-2">Профиль</a>
                     <a href="{% url 'dashboard' %}" class="btn btn-outline-dark me-2">Мой кабинет</a>
                 {% endif %}
                 <a href="{% url 'logout' %}" class="btn btn-outline-danger">Выход</a>

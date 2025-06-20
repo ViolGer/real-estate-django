@@ -1,5 +1,4 @@
-from django.urls import path
-
+from django.urls import path, include
 from . import views
 
 urlpatterns = [
@@ -9,4 +8,6 @@ urlpatterns = [
     path('add/', views.add_property, name='add_property'),
     path('property/<int:pk>/edit/', views.edit_property, name='edit_property'),
     path('property/<int:pk>/delete/', views.delete_property, name='delete_property'),
+    #path('profile/', views.profile_view, name='profile'),
+    path('', include('users.urls')),
     ]

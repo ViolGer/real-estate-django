@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Профиль{% endblock %}
+
+{% block content %}
+<div class="property-container">
+    <h2 class="mb-4">👤 Профиль пользователя</h2>
+
+    <div class="mb-3">
+        <p><span class="info-label">Имя пользователя:</span> {{ user.username }}</p>
+        <p><span class="info-label">Email:</span> {{ user.email }}</p>
+        <p><span class="info-label">Дата регистрации:</span> {{ user.date_joined|date:"d.m.Y" }}</p>
+        <p><span class="info-label">Всего объявлений:</span> {{ property_count }}</p>
+    </div>
+
+    <a href="{% url 'dashboard' %}" class="btn btn-green me-2">📦 Мои объявления</a>
+    <a href="{% url 'edit_profile' %}" class="btn btn-outline-primary me-2">Редактировать профиль</a>
+    <a href="{% url 'logout' %}" class="btn btn-outline-danger">Выйти</a>
+</div>
+{% endblock %}
