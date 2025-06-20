@@ -27,7 +27,7 @@ urlpatterns = [
     path('', include('listings.urls')),
     path('accounts/login/', auth_views.LoginView.as_view(), name='login'),
     path('accounts/logout/', auth_views.LogoutView.as_view(next_page='property_list'), name='logout'),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 #обработка медиа файлов для отладки
 if settings.DEBUG:
