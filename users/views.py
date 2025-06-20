@@ -1,8 +1,11 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
+from django.contrib.auth import logout
 from users.forms import UserForm, ProfileForm
-
+from .forms import SignUpForm
 from listings.models import Property
+from django.contrib.auth import login
+
 
 
 @login_required
@@ -30,3 +33,18 @@ def profile_view(request):
         'user': user,
         'property_count': user_properties.count()
     })
+
+def signup_view(request):
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user) #автоматический вход после регистрации
+            return  redirect('dashboard')
+    else:
+        form = SignUpForm()
+    return render(request, 'users/signup.html', {'form': form})
+
+def logout_view(request):
+    logout(request)
+    return redirect('property_list')
