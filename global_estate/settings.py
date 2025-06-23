@@ -57,7 +57,7 @@ ROOT_URLCONF = 'global_estate.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'listings' / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -131,3 +131,8 @@ LOGIN_REDIRECT_URL = 'dashboard'
 
 # Куда перенаправлять после выхода
 LOGOUT_REDIRECT_URL = 'property_list'
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = 1025
+DEFAULT_FROM_EMAIL = 'noreply@globalestate.com'
