@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="property-container">
+  <h2>📚 Мини-курс для агентов</h2>
+  <ul>
+    {% for lesson in lessons %}
+      <li>
+        <a href="{% url 'lesson_detail' lesson.id %}">{{ lesson.title }}</a>
+        {% if lesson.id in completed_ids %} ✅ {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

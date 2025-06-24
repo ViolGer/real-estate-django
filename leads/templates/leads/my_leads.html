@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="property-container">
+  <h2>🧾 Мои лиды</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Имя клиента</th>
+        <th>Телефон</th>
+        <th>Объект</th>
+        <th>Статус</th>
+        <th>Комиссия</th>
+        <th>Дата</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for lead in leads %}
+      <tr>
+        <td>{{ lead.client_name }}</td>
+        <td>{{ lead.phone }}</td>
+        <td>{{ lead.property_name }}</td>
+        <td>{{ lead.status }}</td>
+        <td>{{ lead.commission }}</td>
+        <td>{{ lead.created_at|date:"d.m.Y" }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6">Нет зарегистрированных лидов.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

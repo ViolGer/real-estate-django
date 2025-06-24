@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="property-container">
+  <h2>📋 Зарегистрировать лида</h2>
+  <form method="post">
+    {% csrf_token %}
+    <label>Имя клиента:</label>
+    <input type="text" name="client_name" class="form-control" required>
+
+    <label>Телефон:</label>
+    <input type="text" name="phone" class="form-control" required>
+
+    <label>Объект недвижимости:</label>
+    <input type="text" name="property_name" class="form-control" required>
+
+    <label>Комментарий:</label>
+    <textarea name="comment" class="form-control"></textarea>
+
+    <button type="submit" class="btn-green" style="margin-top: 15px;">Добавить лида</button>
+  </form>
+</div>
+{% endblock %}

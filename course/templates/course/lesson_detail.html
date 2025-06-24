@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="property-container">
+  <h2>{{ lesson.title }}</h2>
+  <p>{{ lesson.description }}</p>
+  {% if lesson.video %}
+    <video controls width="100%">
+      <source src="{{ lesson.video.url }}" type="video/mp4">
+    </video>
+  {% endif %}
+  <form method="post" action="{% url 'mark_complete' lesson.id %}">
+    {% csrf_token %}
+    <button type="submit" class="btn-green">Отметить как пройдено</button>
+  </form>
+</div>
+{% endblock %}
