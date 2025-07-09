@@ -10,4 +10,5 @@ urlpatterns = [
     path('property/<int:pk>/delete/', views.delete_property, name='delete_property'),
     #path('profile/', views.profile_view, name='profile'),
     path('', include('users.urls')),
+    path('api/', include('leads.api_urls')),
     ]
