@@ -1,35 +1,11 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Lesson, UserProgress
+from .models import Quiz, Question, Choice, UserAnswer
 from django.contrib.auth.decorators import login_required
-
-@login_required
-def lesson_list(request):
-    lessons = Lesson.objects.all().order_by('order')
-    user_progress = UserProgress.objects.filter(user=request.user)
-    completed_ids = user_progress.filter(completed=True).values_list('lesson_id', flat=True)
-    return render(request, 'course/lesson_list.html', {
-        'lessons': lessons,
-        'completed_ids': completed_ids
-    })
-
-@login_required
-def lesson_detail(request, lesson_id):
-    lesson = get_object_or_404(Lesson, id=lesson_id)
-    UserProgress.objects.get_or_create(user=request.user, lesson=lesson)
-    return render(request, 'course/lesson_detail.html', {'lesson': lesson})
-
-@login_required
-def mark_complete(request, lesson_id):
-    lesson = get_object_or_404(Lesson, id=lesson_id)
-    progress, created = UserProgress.objects.get_or_create(user=request.user, lesson=lesson)
-    progress.completed = True
-    progress.save()
-    return redirect('lesson_list')
 
 @login_required
 def quiz_list(request):
     quizzes = Quiz.objects.all()
-    return render(request, 'course/quiz_list.html', {'quizzes': quizzes})
+    return render(request, 'quizzes/quiz_list.html', {'quizzes': quizzes})
 
 @login_required
 def quiz_detail(request, quiz_id):
@@ -48,7 +24,7 @@ def quiz_detail(request, quiz_id):
                 )
         return redirect('quiz_result', quiz_id=quiz.id)
 
-    return render(request, 'course/quiz_detail.html', {
+    return render(request, 'quizzes/quiz_detail.html', {
         'quiz': quiz,
         'questions': questions
     })
@@ -68,7 +44,7 @@ def quiz_result(request, quiz_id):
 
     score = int((correct / total) * 100) if total > 0 else 0
 
-    return render(request, 'course/quiz_result.html', {
+    return render(request, 'quizzes/quiz_result.html', {
         'quiz': quiz,
         'score': score,
         'correct': correct,

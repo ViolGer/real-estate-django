@@ -11,4 +11,5 @@ urlpatterns = [
     #path('profile/', views.profile_view, name='profile'),
     path('', include('users.urls')),
     path('api/', include('leads.api_urls')),
+    path('quizzes/', include('quizzes.urls')),
     ]
