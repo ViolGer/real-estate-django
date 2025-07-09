@@ -1,6 +1,12 @@
 from django.shortcuts import render, redirect
 from .models import Lead
 from django.contrib.auth.decorators import login_required
+from users.decorators import agent_required
+
+@agent_required
+def my_leads(request):
+    leads = Lead.objects.filter(agent=request.user)
+    return render(request, 'leads/my_leads.html', {'leads': leads})
 
 @login_required
 def lead_create(request):
