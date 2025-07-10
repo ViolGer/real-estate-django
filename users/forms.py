@@ -13,7 +13,11 @@ class ProfileForm(forms.ModelForm):
         model = Profile
         fields = ['avatar']
 
-class SignUpForm(UserCreationForm):
-    model = User
-    fields = ['username', 'email']
+class CustomRegisterForm(UserCreationForm):
+    email = forms.EmailField(required=True)
+
+    class Meta:
+        model = User
+        fields = ['username', 'email','password1', 'password2']
+
 

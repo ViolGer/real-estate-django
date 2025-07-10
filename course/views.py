@@ -1,6 +1,22 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Lesson, UserProgress
 from django.contrib.auth.decorators import login_required
+#from achievements.models import Badge, UserBadge
+from achievements.utils import check_course_completion
+
+
+@login_required
+def mark_complete(request, lesson_id):
+    lesson = get_object_or_404(Lesson, id=lesson_id)
+    progress, _ = UserProgress.objects.get_or_create(user=request.user, lesson=lesson)
+    progress.completed = True
+    progress.save()
+
+    check_course_completion(request.user)
+
+    return redirect('lesson_list')
+
+
 
 @login_required
 def lesson_list(request):
@@ -17,14 +33,6 @@ def lesson_detail(request, lesson_id):
     lesson = get_object_or_404(Lesson, id=lesson_id)
     UserProgress.objects.get_or_create(user=request.user, lesson=lesson)
     return render(request, 'course/lesson_detail.html', {'lesson': lesson})
-
-@login_required
-def mark_complete(request, lesson_id):
-    lesson = get_object_or_404(Lesson, id=lesson_id)
-    progress, created = UserProgress.objects.get_or_create(user=request.user, lesson=lesson)
-    progress.completed = True
-    progress.save()
-    return redirect('lesson_list')
 
 @login_required
 def quiz_list(request):

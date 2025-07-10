@@ -1,6 +1,20 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Quiz, Question, Choice, UserAnswer
 from django.contrib.auth.decorators import login_required
+from achievements.models import Badge, UserBadge
+from quizzes.models import QuizResult
+
+
+def check_quiz_completion(user):
+    total_quizzes = Quiz.objects.count()
+    passed_quizzes = QuizResult.objects.filter(user=user, passed=True).count()
+
+    if total_quizzes == passed_quizzes:
+        badge, _ = Badge.objects.get_or_create(name="Квиз-мастер", defaults={
+            "description": "Ты сдал все квизы! 🎓"
+        })
+        UserBadge.objects.get_or_create(user=user, badge=badge)
+
 
 @login_required
 def quiz_list(request):

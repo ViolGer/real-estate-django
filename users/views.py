@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib.auth import logout
 from users.forms import UserForm, ProfileForm
-from .forms import SignUpForm
+from .forms import CustomRegisterForm
 from listings.models import Property
 from django.contrib.auth import login
 
@@ -36,13 +36,13 @@ def profile_view(request):
 
 def signup_view(request):
     if request.method == 'POST':
-        form = SignUpForm(request.POST)
+        form = CustomRegisterForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user) #автоматический вход после регистрации
-            return  redirect('dashboard')
+            login(request, user)
+            return redirect('dashboard')
     else:
-        form = SignUpForm()
+        form = CustomRegisterForm()
     return render(request, 'users/signup.html', {'form': form})
 
 def logout_view(request):
