@@ -12,4 +12,5 @@ urlpatterns = [
     path('', include('users.urls')),
     path('api/', include('leads.api_urls')),
     path('quizzes/', include('quizzes.urls')),
+    path('api/', include('listings.api_urls')),
     ]

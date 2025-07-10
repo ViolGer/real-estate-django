@@ -16,3 +16,7 @@ class UserBadge(models.Model):
 
     def __str__(self):
         return f"{self.user.username} — {self.badge.name}"
+
+class UserBadgeView(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    show_badges = models.BooleanField(default=True)

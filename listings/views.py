@@ -12,15 +12,24 @@ def property_list(request):
     #передаем их в шаблон
     return render(request, 'listings/property_list.html', {'properties': properties})
 
-def property_detail(request, pk):
-    property = get_object_or_404(Property, pk=pk)
-    return render(request, 'listings/property_detail.html', {'property': property})
+@login_required
+def property_detail(request, property_id):
+    property = get_object_or_404(Property, id=property_id)
+    is_favorite = Favorite.objects.filter(user=request.user, property=property).exists()
+    user_badges = UserBadge.objects.filter(user=request.user)
+
+    return render(request, 'listings/property_detail.html', {
+        'property': property,
+        'is_favorite': is_favorite,
+        'user_badges': user_badges
+    })
 
 
 @login_required
 def dashboard(request):
     properties = Property.objects.filter(owner=request.user)
     return render(request, 'listings/dashboard.html', {'properties': properties})
+
 def add_property(request):
     if request.method == 'POST':
         form = PropertyForm(request.POST, request.FILES)
@@ -32,6 +41,7 @@ def add_property(request):
     else:
         form = PropertyForm()
     return render(request, 'listings/add_property.html', {'form': form})
+
 def edit_property(request, pk):
     property = get_object_or_404(Property, pk=pk, owner=request.user)
 
@@ -44,6 +54,7 @@ def edit_property(request, pk):
         form = PropertyForm(instance=property)
 
     return render(request, 'listings/edit_property.html', {'form': form})
+
 def delete_property(request, pk):
     property = get_object_or_404(Property, pk=pk, owner=request.user)
 

@@ -1,4 +1,6 @@
-from django.db import models  # Импортируем модуль моделей Django
+from email.policy import default
+
+from django.db import models
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 
@@ -7,40 +9,28 @@ def validate_image_size(image):
     if image.size > max_size_mb * 1024 * 1024:
         raise ValidationError(f"Максимальный размер изображения — {max_size_mb}MB")
 
-
-# Определяем модель свойство — она будет представлять объект недвижимости
 class Property(models.Model):
-    # Название объявления, например: "Квартира у моря"
     title = models.CharField(max_length=255)
-
-    # Полное описание — можно вставить много текста
     description = models.TextField()
-
-    # Страна, в которой находится объект
     country = models.CharField(max_length=100)
-
-    # Город или населённый пункт
     city = models.CharField(max_length=100)
-
-    # Цена объекта (до 9999999999.99 — 12 цифр, 2 после точки)
     price = models.DecimalField(max_digits=12, decimal_places=2)
-
-    # Валюта (например, USD, EUR, GBP)
     currency = models.CharField(max_length=10, default='USD')
-
-    # Флаг, доступен ли объект для продажи/аренды
     is_available = models.BooleanField(default=True)
-
-    # Дата и время создания объявления
     created_at = models.DateTimeField(auto_now_add=True)
-
-    #добавляем изображение
     image = models.ImageField(upload_to='property_images/', blank=True, null=True)
-
-    #площадь
     area = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
-
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='properties')
+
+    ownership_type = models.CharField(max_length=50, choices=[('freehold', 'Freehold'), ('leasehold', 'Leasehold')], default='freehold')
+
+    distance_to_center_m = models.PositiveIntegerField(null=True, blank=True)
+    distance_to_airport_km = models.PositiveIntegerField(null=True, blank=True)
+    roi_percent = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    is_furnished = models.BooleanField(default=False)
+    has_management_company = models.BooleanField(default=False)
+    has_guaranteed_income = models.BooleanField(default=False)
+    yutree_score = models.CharField(max_length=50, null=True, blank=True)
 
     def price_per_m2(self):
         if self.area and self.area > 0:
@@ -61,3 +51,11 @@ class PropertyImage(models.Model):
 
     def __str__(self):
         return f"Image for {self.property.title}"
+
+class Favorite(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='favorites')
+    property = models.ForeignKey(Property, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'property')
