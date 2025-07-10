@@ -46,9 +46,18 @@
                         {% endif %}
                     </div>
                 </div>
+                <form method="POST" action="{% url 'toggle_favorite_api' property.id %}">
+                    {% csrf_token %}
+                    {% if is_favorite %}
+                        <button class="btn btn-warning w-100 mb-2">★ Убрать из избранного</button>
+                    {% else %}
+                        <button class="btn btn-outline-warning w-100 mb-2">☆ В избранное</button>
+                    {% endif %}
+                </form>
 
                 <button class="btn btn-green w-100 mb-2">Показать телефон</button>
                 <button class="btn btn-outline-secondary w-100">Написать</button>
+
             </div>
 
             <div class="price-box">

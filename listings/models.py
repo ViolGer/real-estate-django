@@ -59,3 +59,6 @@ class Favorite(models.Model):
 
     class Meta:
         unique_together = ('user', 'property')
+
+    def __str__(self):
+        return f"{self.user.username} - {self.property.title}"

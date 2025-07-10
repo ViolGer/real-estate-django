@@ -2,8 +2,13 @@ from gc import get_objects
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Property
+from .models import Property, Favorite
 from .forms import PropertyForm
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .serializers import PropertySerializer
+from django.shortcuts import get_object_or_404
+from achievements.models import UserBadge
 
 #обработка запросов на главную страницу
 def property_list(request):
@@ -13,8 +18,8 @@ def property_list(request):
     return render(request, 'listings/property_list.html', {'properties': properties})
 
 @login_required
-def property_detail(request, property_id):
-    property = get_object_or_404(Property, id=property_id)
+def property_detail(request, pk):
+    property = get_object_or_404(Property, pk=pk)
     is_favorite = Favorite.objects.filter(user=request.user, property=property).exists()
     user_badges = UserBadge.objects.filter(user=request.user)
 
@@ -63,3 +68,9 @@ def delete_property(request, pk):
         return redirect('dashboard')
 
     return render(request, 'listings/delete_property.html', {'property': property})
+
+@api_view(['GET'])
+def property_detail_api(request, pk):
+    property = get_object_or_404(Property, pk=pk)
+    serializer = PropertySerializer(property)
+    return Response(serializer.data)
