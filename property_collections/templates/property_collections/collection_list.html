@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Подборки | Global Estate{% endblock %}
+
+{% block content %}
+
+<div class="property-container">
+    <h2>🏠 Подборки недвижимости</h2>
+
+    <a href="{% url 'create_collection' %}" class="btn btn-primary">Создать новую подборку</a>
+
+    <ul class="list-group">
+        {% for collection in collections %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <a href="{% url 'collection_detail' collection.id %}">{{ collection.name }}</a>
+                <span class="badge bg-secondary">{{ collection.properties.count }} объектов</span>
+            </li>
+        {% empty %}
+            <li class="list-group-item">Нет доступных подборок.</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

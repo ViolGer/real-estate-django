@@ -22,7 +22,6 @@
                 {% endfor %}
             </div>
 
-
             <h5 class="fw-bold">Описание</h5>
             <p>{{ property.description }}</p>
         </div>
@@ -46,18 +45,59 @@
                         {% endif %}
                     </div>
                 </div>
-                <form method="POST" action="{% url 'toggle_favorite_api' property.id %}">
-                    {% csrf_token %}
-                    {% if is_favorite %}
-                        <button class="btn btn-warning w-100 mb-2">★ Убрать из избранного</button>
-                    {% else %}
-                        <button class="btn btn-outline-warning w-100 mb-2">☆ В избранное</button>
-                    {% endif %}
-                </form>
+
+                <!-- Добавление в избранное -->
+                <button id="favorite-btn"
+                        class="btn {% if is_favorite %}btn-warning{% else %}btn-outline-warning{% endif %} w-100 mb-2"
+                        onclick="toggleFavorite({{ property.id }})">
+                    {% if is_favorite %}★ Убрать из избранного{% else %}☆ В избранное{% endif %}
+                </button>
+
+                <script>
+                    function toggleFavorite(propertyId) {
+                        fetch(`/api/property/${propertyId}/favorite/`, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRFToken': '{{ csrf_token }}',
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            const btn = document.getElementById('favorite-btn');
+                            if (data.status === 'added') {
+                                btn.innerText = '★ Убрать из избранного';
+                                btn.classList.remove('btn-outline-warning');
+                                btn.classList.add('btn-warning');
+                            } else {
+                                btn.innerText = '☆ В избранное';
+                                btn.classList.remove('btn-warning');
+                                btn.classList.add('btn-outline-warning');
+                            }
+                        })
+                        .catch(error => console.error('Ошибка при добавлении в избранное:', error));
+                    }
+                </script>
+
+
+                <!-- Добавление в подборку -->
+                <h6 class="fw-bold mt-4">Добавить в подборку</h6>
+                {% if collections %}
+                    <form method="post" action="{% url 'add_to_collection' property.id %}">
+                        {% csrf_token %}
+                        <select name="collection_id" class="form-select mb-2">
+                            {% for collection in collections %}
+                                <option value="{{ collection.id }}">{{ collection.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="btn btn-outline-primary w-100">Добавить</button>
+                    </form>
+                {% else %}
+                    <p class="text-muted">У вас пока нет подборок. <a href="{% url 'collection_list' %}">Создать подборку</a></p>
+                {% endif %}
 
                 <button class="btn btn-green w-100 mb-2">Показать телефон</button>
                 <button class="btn btn-outline-secondary w-100">Написать</button>
-
             </div>
 
             <div class="price-box">

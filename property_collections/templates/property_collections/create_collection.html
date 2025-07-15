@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Создать подборку |
+Global Estate{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Создать новую подборку</h2>
+    <form method="post">
+        {csrf_token %}
+        <div class="mb-3">
+            <label for="id_name" class="form-label">Название подборки</label>
+            {{ form.name }}
+        </div>
+        <div class="mb-3">
+            <label for="id_description" class="form-label">Описание (необязательно)</label>
+            {{ form.description }}
+        </div>
+        <button type="submit" class="btn btn-primary">Создать</button>
+        <a href="{ url 'collection_list' %}" class="btn btn-secondary">Отмена</a>
+    </form>
+</div>
+{% endblock %}

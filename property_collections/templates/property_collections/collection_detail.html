@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ collection.name }} | Подборка{% endblock %}
+
+{% block content %}
+<div class="property-container">
+    <h2>{{ collection.name }}</h2>
+    <p class="text-muted">{{ collection.description }}</p>
+
+    <div class="row">
+        {% for property in collection.properties.all %}
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <img src="{{ property.image.url }}" class="card-img-top" alt="{{ property.title }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ property.title }}</h5>
+                        <p class="card-text">{{ property.city }}, {{ property.country }}</p>
+                        <p class="card-text fw-bold">${{ property.price }}</p>
+                        <a href="{% url 'property_detail' property.id %}" class="btn btn-outline-primary btn-sm">Подробнее</a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p>В этой подборке пока нет объектов.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

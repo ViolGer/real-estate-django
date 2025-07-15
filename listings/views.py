@@ -2,6 +2,8 @@ from gc import get_objects
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
+
+from property_collections.models import PropertyCollection
 from .models import Property, Favorite
 from .forms import PropertyForm
 from rest_framework.decorators import api_view
@@ -9,26 +11,6 @@ from rest_framework.response import Response
 from .serializers import PropertySerializer
 from django.shortcuts import get_object_or_404
 from achievements.models import UserBadge
-
-#обработка запросов на главную страницу
-def property_list(request):
-    #получаем доступные объекты
-    properties = Property.objects.filter(is_available=True).order_by('-created_at')
-    #передаем их в шаблон
-    return render(request, 'listings/property_list.html', {'properties': properties})
-
-@login_required
-def property_detail(request, pk):
-    property = get_object_or_404(Property, pk=pk)
-    is_favorite = Favorite.objects.filter(user=request.user, property=property).exists()
-    user_badges = UserBadge.objects.filter(user=request.user)
-
-    return render(request, 'listings/property_detail.html', {
-        'property': property,
-        'is_favorite': is_favorite,
-        'user_badges': user_badges
-    })
-
 
 @login_required
 def dashboard(request):
@@ -74,3 +56,22 @@ def property_detail_api(request, pk):
     property = get_object_or_404(Property, pk=pk)
     serializer = PropertySerializer(property)
     return Response(serializer.data)
+
+# Главная страница со списком объектов
+def property_list(request):
+    properties = Property.objects.filter(is_available=True).order_by('-created_at')
+    return render(request, 'listings/property_list.html', {'properties': properties})
+
+# Детали объекта
+@login_required
+def property_detail(request, pk):
+    property = get_object_or_404(Property, pk=pk)
+    is_favorite = Favorite.objects.filter(user=request.user, property=property).exists()
+    user_badges = UserBadge.objects.filter(user=request.user)
+    collections = PropertyCollection.objects.filter(user=request.user)
+    return render(request, 'listings/property_detail.html', {
+        'property': property,
+        'is_favorite': is_favorite,
+        'user_badges': user_badges,
+        'collections': collections,
+    })

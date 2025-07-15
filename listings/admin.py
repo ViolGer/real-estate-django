@@ -4,7 +4,6 @@ from django.http import HttpResponse
 from .models import Property, PropertyImage
 import csv
 
-
 #для отображения галереи в админке
 #TabularInline это табличный вид
 class PropertyImageInline(admin.TabularInline):

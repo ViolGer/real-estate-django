@@ -32,6 +32,8 @@ urlpatterns = [
 
     path('quizzes/', include('quizzes.urls')),
 
+    path('collections/', include('property_collections.urls')),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 #обработка медиа файлов для отладки
