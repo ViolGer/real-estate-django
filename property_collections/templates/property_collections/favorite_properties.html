@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Избранное | Global Estate{% endblock %}
+
+{% block content %}
+<div class="property-container">
+    <h1 class="mb-5 text-center">🏘️ Избранные объекты</h1>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for property in properties %}
+            {% include "listings/includes/property_card.html" %}
+        {% empty %}
+            <div class="col">
+                <div class="alert alert-info">Объекты не найдены</div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

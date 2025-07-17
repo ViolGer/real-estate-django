@@ -22,9 +22,11 @@
                     <img src="{{ user.profile.avatar.url }}" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;">
                 {% endif %}
                 {% if request.resolver_match.url_name != "dashboard" %}
+                    <a href="{% url 'property_list' %}" class="btn btn-outline-dark me-2">← На главную</a>
                     <a href="{% url 'profile' %}" class="btn btn-outline-dark me-2">Профиль</a>
                     <a href="{% url 'dashboard' %}" class="btn btn-outline-dark me-2">Мой кабинет</a>
                     <a href="{% url 'collection_list' %}" class="btn btn-outline-secondary">Мои подборки</a>
+                    <a href="{% url 'favorite_properties' %}" class="btn btn-outline-secondary">Избранное</a>
                 {% endif %}
                 <form action="{% url 'logout' %}" method="post" class="d-inline">
                     {% csrf_token %}

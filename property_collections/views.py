@@ -23,7 +23,8 @@ def create_collection(request):
 @login_required
 def collection_list(request):
     collections = PropertyCollection.objects.filter(user=request.user)
-    return render(request, 'property_collections/collection_list.html', {'collections': collections})
+    return render(request, 'property_collections/collection_list.html', {
+        'collections': collections})
 
 # Детали подборки
 @login_required
@@ -57,6 +58,7 @@ def remove_from_collection(request, collection_id, property_id):
     return redirect('edit_collection', pk=collection_id)
 
 #редактирование коллекции
+"""
 @login_required
 def edit_collection(request, pk):
     collection = get_object_or_404(PropertyCollection, pk=pk, user=request.user)
@@ -71,3 +73,27 @@ def edit_collection(request, pk):
                 'form': form,
                 'collection': collection
             })
+"""
+
+
+@login_required
+def favorite_properties(request):
+    favorites = Favorite.objects.filter(user=request.user).select_related('property')
+    properties = [fav.property for fav in favorites]
+    return render(request, 'property_collections/favorite_properties.html', {
+        'properties': properties
+    })
+
+@login_required
+def create_collection_empty(request):
+    if request.method == 'POST':
+        form = CollectionForm(request.POST)
+        if form.is_valid():
+            collection = form.save(commit=False)
+            collection.user = request.user
+            collection.save()
+            return redirect('collection_list')
+    else:
+        form = CollectionForm()
+    return render(request, 'property_collections/create_collection.html', {'form': form})
+

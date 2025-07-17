@@ -15,7 +15,10 @@
                     <div class="card-body">
                         <h5 class="card-title">{{ property.title }}</h5>
                         <h2>{{ collection.name }}
-                            <a href="{% url 'edit_collection' collection.id %}" class="btn btn-sm btn-outline-secondary ms-2">Редактировать</a></h2>
+                            {% comment %}
+                            <a href="{% url 'edit_collection' collection.id %}" class="btn btn-sm btn-outline-secondary ms-2">Редактировать</a>
+                            {% endcomment %}
+                        </h2>
                         <p class="card-text">{{ property.city }}, {{ property.country }}</p>
                         <p class="card-text fw-bold">${{ property.price }}</p>
                         <a href="{% url 'property_detail' property.id %}" class="btn btn-outline-primary btn-sm">Подробнее</a>
