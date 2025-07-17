@@ -24,6 +24,7 @@
                 {% if request.resolver_match.url_name != "dashboard" %}
                     <a href="{% url 'profile' %}" class="btn btn-outline-dark me-2">Профиль</a>
                     <a href="{% url 'dashboard' %}" class="btn btn-outline-dark me-2">Мой кабинет</a>
+                    <a href="{% url 'collection_list' %}" class="btn btn-outline-secondary">Мои подборки</a>
                 {% endif %}
                 <form action="{% url 'logout' %}" method="post" class="d-inline">
                     {% csrf_token %}

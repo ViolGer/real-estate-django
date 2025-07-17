@@ -40,7 +40,13 @@ def add_to_collection(request, property_id):
         property = get_object_or_404(Property, id=property_id)
         collection.properties.add(property)
         return redirect('collection_detail', pk=collection.id)
-
+    else:
+        collections = PropertyCollection.objects.filter(user=request.user)
+        property = get_object_or_404(Property, id=property_id)
+        return  render(request, 'property_collections/add_to_collection.html', {
+            'collections': collections,
+            'property': property,
+        })
 
 # Удаление объекта из подборки
 @login_required
@@ -48,6 +54,20 @@ def remove_from_collection(request, collection_id, property_id):
     collection = get_object_or_404(PropertyCollection, id=collection_id, user=request.user)
     property = get_object_or_404(Property, id=property_id)
     collection.properties.remove(property)
-    return redirect('collection_detail', pk=collection_id)
+    return redirect('edit_collection', pk=collection_id)
 
-
+#редактирование коллекции
+@login_required
+def edit_collection(request, pk):
+    collection = get_object_or_404(PropertyCollection, pk=pk, user=request.user)
+    if request.method == 'POST':
+        form = CollectionForm(request.POST, instance=collection)
+        if form.is_valid():
+            form.save()
+            return redirect('collection_detail', pk=collection.pk)
+        else:
+            form = CollectionForm(instance=collection)
+            return render(request, 'property_collections/edit_collection.html', {
+                'form': form,
+                'collection': collection
+            })

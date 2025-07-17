@@ -15,6 +15,7 @@ urlpatterns = [
     # Collections
     path('collections/', collection_views.collection_list, name='collection_list'),
     path('collections/add/<int:property_id>/', collection_views.add_to_collection, name='add_to_collection'),
+    path('collections/remove/<int:collection_id>/<int:property_id>/', collection_views.remove_from_collection, name='remove_from_collection'),
     path('collections/create/', collection_views.create_collection, name='create_collection'),
 
     # API

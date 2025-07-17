@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %} Редактировать подборку | Global Estate {% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">Редактировать подборку: "{{ collection.name }}"</h2>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+        <a href="{% url 'collection_detail' collection.id %}" class="btn btn-secondary">Отмена</a>
+    </form>
+
+    <hr>
+
+    <h4 class="mt-4">Объекты в подборке:</h4>
+    {% if collection.properties.all %}
+        <div class="row">
+            {% for property in collection.properties.all %}
+                <div class="col-md-4 md-4">
+                    <div class="card">
+                        <img src="{{ property.image.url }}" class="card-img-top" alt="{{ property.title }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ property.title }}</h5>
+                            <p class="card-text">{{ property.city }}, {{ property.country }}</p>
+                            <p class="card-text fw-bold">{{ property.price }}</p>
+                            <a href="{% url 'property_detail' property.id %}" class="btn btn-outline-primary btn-sm">Подробнее</a>
+
+                            <form method="post" action="{% url 'remove_from_collection' collection.id property.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm mt-2">Удалить из подборки</button>
+                                <p>collection: {{ collection.id }},
+                                property: {{ property.id }}</p>
+                                <a href="/collections/remove/2/12">тестовая ссылка</a>
+                            </form>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="text-muted">В этой подборке пока нет объектов</p>
+
+        </div>
+        <a href="{% url 'collection_list' %}" class="btn btn-secondary mt-4">Назад к подборкам</a>
+    </div>
+{% endblock %}
+

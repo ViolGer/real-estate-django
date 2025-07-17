@@ -14,9 +14,15 @@
                     <img src="{{ property.image.url }}" class="card-img-top" alt="{{ property.title }}">
                     <div class="card-body">
                         <h5 class="card-title">{{ property.title }}</h5>
+                        <h2>{{ collection.name }}
+                            <a href="{% url 'edit_collection' collection.id %}" class="btn btn-sm btn-outline-secondary ms-2">Редактировать</a></h2>
                         <p class="card-text">{{ property.city }}, {{ property.country }}</p>
                         <p class="card-text fw-bold">${{ property.price }}</p>
                         <a href="{% url 'property_detail' property.id %}" class="btn btn-outline-primary btn-sm">Подробнее</a>
+                        <form method="post" action="{% url 'remove_from_collection' collection.id property.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">Удалить из подборки</button>
+                        </form>
                     </div>
                 </div>
             </div>
