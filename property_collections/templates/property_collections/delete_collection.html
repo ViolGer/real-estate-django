@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}Удалить подборку{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Удалить подборку</h2>
+    <p>Вы уверенны, что хотите удалить подборку <strong>{{ collection.name }}</strong>?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Удалить</button>
+        <a href="{% url 'collection_detail' collection.pk %}" class="btn btn-secondary">Отмена</a>
+    </form>
+</div>
+{% endblock %}

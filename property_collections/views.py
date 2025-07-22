@@ -4,6 +4,17 @@ from .models import PropertyCollection
 from listings.forms import CollectionForm
 from listings.models import Property, Favorite
 from achievements.models import UserBadge
+from django.contrib import messages
+
+#удаление подборки
+@login_required
+def delete_collection(request, pk):
+    collection = get_object_or_404(PropertyCollection, pk=pk, user=request.user)
+    if request.method == 'POST':
+        collection.delete()
+        messages.success(request, 'Подборка удалена.')
+        return redirect('collection_list')
+    return render(request, 'property_collections/delete_collection.html', {'collection': collection})
 
 # Создание новой подборки
 @login_required
