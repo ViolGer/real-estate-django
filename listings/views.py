@@ -12,6 +12,12 @@ from .serializers import PropertySerializer
 from django.shortcuts import get_object_or_404
 from achievements.models import UserBadge
 
+from django.http import HttpResponse
+
+@login_required
+def generate_presentation(request, pk):
+    return HttpResponse(f'здесь будет преза объекта {pk}')
+
 @login_required
 def dashboard(request):
     properties = Property.objects.filter(owner=request.user)
@@ -75,3 +81,4 @@ def property_detail(request, pk):
         'user_badges': user_badges,
         'collections': collections,
     })
+

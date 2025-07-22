@@ -27,4 +27,6 @@ urlpatterns = [
     path('users/', include('users.urls')),
     path('quizzes/', include('quizzes.urls')),
     path('api/', include('leads.api_urls')),
+
+    path('<int:pk>/generate_presentation/', views.generate_presentation, name='generate_presentation'),
 ]
