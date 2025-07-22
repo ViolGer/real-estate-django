@@ -55,7 +55,7 @@ def remove_from_collection(request, collection_id, property_id):
     collection = get_object_or_404(PropertyCollection, id=collection_id, user=request.user)
     property = get_object_or_404(Property, id=property_id)
     collection.properties.remove(property)
-    return redirect('edit_collection', pk=collection_id)
+    return redirect('collection_detail', pk=collection_id)
 
 #редактирование коллекции
 """
