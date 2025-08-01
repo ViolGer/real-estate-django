@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}{{ collection.name }} | Подборка{% endblock %}
 
@@ -12,7 +13,12 @@
         {% for property in collection.properties.all %}
             <div class="col-md-4 mb-4">
                 <div class="card">
-                    <img src="{{ property.image.url }}" class="card-img-top" alt="{{ property.title }}">
+                    {% if property.image %}
+                      <img src="{{ property.image.url }}" class="card-img-top" alt="{{ property.title }}">
+                    {% else %}
+                      <img src="{% static 'images/default.jpg' %}" class="card-img-top" alt="{{ property.title }}">
+                    {% endif %}
+
                     <div class="card-body">
                         <h5 class="card-title">{{ property.title }}</h5>
                         <h2>{{ collection.name }}
