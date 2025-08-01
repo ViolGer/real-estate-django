@@ -14,6 +14,9 @@ from achievements.models import UserBadge
 
 from django.http import HttpResponse
 
+def presentation_page(request):
+    return render(request, 'presentation/presentation.html')
+
 @login_required
 def generate_presentation(request, pk):
     return HttpResponse(f'здесь будет преза объекта {pk}')

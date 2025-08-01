@@ -29,4 +29,5 @@ urlpatterns = [
     path('api/', include('leads.api_urls')),
 
     path('<int:pk>/generate_presentation/', views.generate_presentation, name='generate_presentation'),
+    path('presentation/', views.presentation_page, name='presentation'),
 ]

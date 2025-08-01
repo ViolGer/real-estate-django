@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+<div class="bg-red-500 p-4">красный блок</div>
+<div class="bg-gray-900 text-white p-6 rounded-xl shadow-xl flex flex-col lg:flex-row gap-6">
+
+  <!-- Левая часть -->
+  <div class="w-full lg:w-2/3">
+    <div class="relative">
+      <img src="{{ property.main_image.url }}" alt="{{ property.title }}" class="rounded-2xl w-full h-72 object-cover" />
+      <div class="absolute top-4 right-4 bg-emerald-500 text-white px-3 py-1 rounded-lg text-sm font-semibold">
+        ${{ property.price }}
+      </div>
+    </div>
+    <h1 class="text-3xl font-bold mt-4">{{ property.title }}</h1>
+    <p class="text-sm text-gray-400 mt-1">
+      {{ property.city }}, {{ property.country }} • {{ property.property_type }} • {{ property.ownership }}
+    </p>
+  </div>
+
+  <!-- Правая часть: Агент -->
+  <div class="w-full lg:w-1/3 bg-gray-800 p-4 rounded-2xl flex flex-col gap-3">
+    <div class="flex items-center gap-3">
+      <img src="{{ property.agent.avatar.url }}" alt="{{ property.agent.full_name }}" class="w-12 h-12 rounded-full object-cover">
+      <div>
+        <h4 class="font-semibold">{{ property.agent.full_name }}</h4>
+        <p class="text-sm text-gray-400">Агент по недвижимости</p>
+      </div>
+    </div>
+    <div class="text-sm text-gray-300">
+      <p>📧 {{ property.agent.email }}</p>
+      <p>📞 {{ property.agent.phone }}</p>
+      <p>💼 Комиссия: {{ property.agent.commission }}%</p>
+    </div>
+  </div>
+
+</div>
+<div class="bg-[#1d1f23] min-h-screen text-white">
+  <!-- Хедер -->
+  <div class="flex justify-between items-center px-8 py-4 border-b border-gray-700">
+    <div class="text-xl font-semibold">🏝 {{ property.title }}</div>
+    <div class="text-sm text-gray-400">{{ property.location }}</div>
+  </div>
+
+  <!-- Фото -->
+  <div class="relative w-full h-[400px] overflow-hidden">
+    {% if images %}
+      <img src="{{ images.0.image.url }}" alt="{{ property.title }}" class="w-full h-full object-cover">
+    {% else %}
+      <img src="{{ property.image.url }}" alt="{{ property.title }}" class="w-full h-full object-cover">
+    {% endif %}
+
+    <div class="absolute top-4 left-4 bg-white text-black text-xs font-semibold px-3 py-1 rounded">
+      {{ property.get_category_display }}
+    </div>
+    <div class="absolute top-4 right-4 bg-green-500 text-white text-lg font-bold px-4 py-2 rounded">
+      ${{ property.price }}
+    </div>
+  </div>
+
+  <!-- Описание объекта -->
+  <div class="px-8 py-6">
+    <h2 class="text-2xl font-bold mb-4">Описание объекта</h2>
+
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-6 text-sm text-gray-300">
+      <div>
+        <div class="text-white font-semibold">Спальни</div>
+        <div>{{ property.bedrooms }}</div>
+      </div>
+      <div>
+        <div class="text-white font-semibold">Ванные</div>
+        <div>{{ property.bathrooms }}</div>
+      </div>
+      <div>
+        <div class="text-white font-semibold">Площадь</div>
+        <div>{{ property.area }} м²</div>
+      </div>
+      <div>
+        <div class="text-white font-semibold">Год сдачи</div>
+        <div>{{ property.year_built }}</div>
+      </div>
+      <div>
+        <div class="text-white font-semibold">Тип владения</div>
+        <div>{{ property.ownership_type }}</div>
+      </div>
+      <div>
+        <div class="text-white font-semibold">До центра</div>
+        <div>{{ property.distance_to_city }} м</div>
+      </div>
+      <div>
+        <div class="text-white font-semibold">До аэропорта</div>
+        <div>{{ property.distance_to_airport }} км</div>
+      </div>
+      <div>
+        <div class="text-white font-semibold">Доходность (ROI)</div>
+        <div>{{ property.roi }}%</div>
+      </div>
+      <div>
+        <div class="text-white font-semibold">Ипотека</div>
+        <div>{% if property.is_mortgage %}Да{% else %}Нет{% endif %}</div>
+      </div>
+      <div>
+        <div class="text-white font-semibold">Управление</div>
+        <div>{% if property.is_managed %}Да{% else %}Нет{% endif %}</div>
+      </div>
+      <div>
+        <div class="text-white font-semibold">Гарантия</div>
+        <div>{% if property.is_guaranteed %}Да{% else %}Нет{% endif %}</div>
+      </div>
+      <div>
+        <div class="text-white font-semibold">Рейтинг</div>
+        <div>{{ property.rating }}</div>
+      </div>
+    </div>
+
+    <!-- Описание -->
+    <p class="mt-6 text-base leading-relaxed text-gray-300">
+      {{ property.description }}
+    </p>
+  </div>
+</div>
+{% endblock %}

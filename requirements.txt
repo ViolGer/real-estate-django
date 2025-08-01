@@ -1,0 +1,15 @@
+Django~=4.2.23
+djangorestframework~=3.16.0
+djangorestframework-simplejwt>=5.3
+
+# Tailwind CSS
+django-tailwind>=3.6
+
+# Тестирование
+pytest>=8.0
+pytest-django>=4.5
+
+# Pillow
+Pillow>=10.0
+
+ipython   # для удобной работы в shell

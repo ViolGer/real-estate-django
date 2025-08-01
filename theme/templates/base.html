@@ -1,0 +1,34 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{% block title %}Global Estate{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {% load static %}
+    <link href="{% static 'css/dist/styles.css' %}" rel="stylesheet">
+  </head>
+  <body class="bg-gray-950 text-white font-sans">
+    <header class="w-full bg-gray-900 py-4 shadow-md">
+      <div class="container mx-auto flex justify-between items-center px-4">
+        <div class="text-xl font-bold text-white">
+          <a href="/">🏠 Global Estate</a>
+        </div>
+        <nav class="space-x-6 text-sm font-medium">
+          <a href="/" class="hover:text-green-400">Главная</a>
+          <a href="/profile/" class="hover:text-green-400">Профиль</a>
+          <a href="/favorites/" class="hover:text-green-400">Избранное</a>
+          <a href="/logout/" class="text-red-400 hover:text-red-500">Выход</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-gray-900 py-6 mt-12 text-center text-sm text-gray-400">
+      © {{ now|date:"Y" }} Global Estate. Все права защищены.
+    </footer>
+  </body>
+</html>

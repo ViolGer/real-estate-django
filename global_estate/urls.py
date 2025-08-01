@@ -11,11 +11,14 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
+from listings.views import presentation_page
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('listings.urls')),
     path('accounts/login/', auth_views.LoginView.as_view(), name='login'),
     path('accounts/logout/', auth_views.LogoutView.as_view(next_page='property_list'), name='logout'),
+
    #сброс пароля
     path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
     path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
@@ -33,6 +36,10 @@ urlpatterns = [
     path('quizzes/', include('quizzes.urls')),
 
     path('collections/', include('property_collections.urls')),
+
+    path('presentation/', include('presentation.urls')),
+
+    path('', include('users.urls')),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

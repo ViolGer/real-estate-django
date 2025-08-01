@@ -1,0 +1,48 @@
+{% load static tailwind_tags %}  {# ✅ Грузим теги tailwind #}
+{% tailwind_css %}                {# ✅ Подключаем скомпилированный tailwind-файл #}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Global Estate{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body class="bg-gray-50 text-gray-800 min-h-screen px-4 py-6">
+    <div class="max-w-7xl mx-auto">
+
+        <!-- 🔐 Блок приветствия и навигации -->
+        <div class="flex justify-end items-center space-x-4 mb-6">
+            {% if user.is_authenticated %}
+                {% if user.profile.avatar %}
+                    <img src="{{ user.profile.avatar.url }}" alt="Avatar" class="w-10 h-10 rounded-full shadow">
+                {% endif %}
+
+                {% if request.resolver_match.url_name != "dashboard" %}
+                    <a href="{% url 'property_list' %}" class="text-gray-700 hover:text-blue-600 underline">← На главную</a>
+                    <a href="{% url 'profile' %}" class="text-gray-700 hover:text-blue-600 underline">Профиль</a>
+                    <a href="{% url 'dashboard' %}" class="text-gray-700 hover:text-blue-600 underline">Мой кабинет</a>
+                    <a href="{% url 'collection_list' %}" class="text-gray-700 hover:text-blue-600 underline">Мои подборки</a>
+                    <a href="{% url 'favorite_properties' %}" class="text-gray-700 hover:text-blue-600 underline">Избранное</a>
+                {% endif %}
+
+                <form action="{% url 'logout' %}" method="post" class="inline">
+                    {% csrf_token %}
+                    <button type="submit" class="text-red-500 border border-red-500 hover:bg-red-500 hover:text-white font-semibold py-1 px-3 rounded transition">
+                        Выход
+                    </button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}" class="text-blue-600 hover:underline">Вход</a>
+                <a href="{% url 'signup' %}" class="bg-blue-600 text-white py-1 px-4 rounded hover:bg-blue-700 transition">Регистрация</a>
+            {% endif %}
+        </div>
+
+        <!-- 📦 Основной контент -->
+        {% block content %}
+        {% endblock %}
+
+    </div>
+</body>
+</html>
