@@ -28,16 +28,16 @@
                 <button type="submit" class="btn btn-green">Поиск</button>
             </div>
 
-            <label class="select-field">
-                <span class="select-label">Сортировка</span>
-                <select name="sort" onchange="this.form.submit()">
+            <div class="select-field">
+                <label for="property-sort" class="sr-only">Сортировка объявлений</label>
+                <select id="property-sort" name="sort" onchange="this.form.submit()">
                     {% for option in sort_options %}
                         <option value="{{ option.value }}" {% if option.value == selected_sort %}selected{% endif %}>
                             {{ option.label }}
                         </option>
                     {% endfor %}
                 </select>
-            </label>
+            </div>
 
             {% if filters_active %}
                 <a class="filter-reset" href="{% url 'property_list' %}">Сбросить фильтры</a>
