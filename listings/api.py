@@ -2,6 +2,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import SessionAuthentication
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from .models import Property, Favorite
 from .serializers import PropertyDetailSerializer
 from django.shortcuts import get_object_or_404
@@ -15,6 +17,7 @@ class PropertyDetailAPI(APIView):
 
 class ToggleFavoriteAPI(APIView):
     permission_classes = [IsAuthenticated]
+    authentication_classes = (SessionAuthentication, JWTAuthentication)
     def post(self, request, pk):
         property_obj = get_object_or_404(Property, pk=pk)
         favorite, created = Favorite.objects.get_or_create(user=request.user, property=property_obj)

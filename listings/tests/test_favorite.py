@@ -75,3 +75,37 @@ def test_toggle_favorite_api_requires_authentication(client):
 
     assert response.status_code in {status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN}
     assert not Favorite.objects.filter(property=prop).exists()
+
+
+@pytest.mark.django_db
+def test_toggle_favorite_api_accepts_session_authenticated_user(client):
+    user = User.objects.create_user(username="browseruser", password="secret")
+    prop = Property.objects.create(
+        title="Browser House", description="...", country="FR", city="Nice", price=130000,
+        owner=user
+    )
+
+    assert client.login(username="browseruser", password="secret") is True
+
+    csrf_token = 'sessiontoken123'
+    client.cookies['csrftoken'] = csrf_token
+
+    url = reverse('toggle_favorite_api', args=[prop.pk])
+
+    response = client.post(
+        url,
+        HTTP_X_CSRFTOKEN=csrf_token,
+        HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+    )
+
+    assert response.status_code == status.HTTP_201_CREATED
+    assert Favorite.objects.filter(user=user, property=prop).exists()
+
+    response = client.post(
+        url,
+        HTTP_X_CSRFTOKEN=csrf_token,
+        HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+    assert not Favorite.objects.filter(user=user, property=prop).exists()
