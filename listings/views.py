@@ -109,12 +109,18 @@ def property_list(request):
     return render(request, 'listings/property_list.html', context)
 
 # Детали объекта
-@login_required
 def property_detail(request, pk):
     property = get_object_or_404(Property, pk=pk)
-    is_favorite = Favorite.objects.filter(user=request.user, property=property).exists()
-    user_badges = UserBadge.objects.filter(user=request.user)
-    collections = PropertyCollection.objects.filter(user=request.user)
+
+    is_favorite = False
+    user_badges = UserBadge.objects.none()
+    collections = PropertyCollection.objects.none()
+
+    if request.user.is_authenticated:
+        is_favorite = Favorite.objects.filter(user=request.user, property=property).exists()
+        user_badges = UserBadge.objects.filter(user=request.user)
+        collections = PropertyCollection.objects.filter(user=request.user)
+
     return render(request, 'listings/property_detail.html', {
         'property': property,
         'is_favorite': is_favorite,

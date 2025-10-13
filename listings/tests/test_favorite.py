@@ -59,3 +59,19 @@ def test_toggle_favorite_api_adds_and_removes():
         'message': 'Removed from favorites'
     }
     assert not Favorite.objects.filter(user=user, property=prop).exists()
+
+
+@pytest.mark.django_db
+def test_toggle_favorite_api_requires_authentication(client):
+    owner = User.objects.create_user(username="owner", password="secret")
+    prop = Property.objects.create(
+        title="Public House", description="...", country="FR", city="Nice", price=120000,
+        owner=owner
+    )
+
+    url = reverse('toggle_favorite_api', args=[prop.pk])
+
+    response = client.post(url)
+
+    assert response.status_code in {status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN}
+    assert not Favorite.objects.filter(property=prop).exists()

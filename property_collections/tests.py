@@ -5,6 +5,14 @@ from django.urls import reverse
 from listings.models import Property, Favorite
 
 
+class FavoritePropertiesAccessTests(TestCase):
+    def test_requires_login(self):
+        response = self.client.get(reverse('favorite_properties'))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse('login'), response.url)
+
+
 class FavoritePropertiesViewTests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='violet', password='password123')

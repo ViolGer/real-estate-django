@@ -30,10 +30,32 @@
           </button>
           <nav class="primary-nav" aria-label="Главная навигация">
             <ul class="site-nav" id="primary-navigation">
-              <li><a class="nav-link" href="/">Главная</a></li>
-              <li><a class="nav-link" href="/profile/">Профиль</a></li>
-              <li><a class="nav-link" href="/favorites/">Избранное</a></li>
-              <li><a class="nav-link nav-link--logout" href="/logout/">Выход</a></li>
+              <li class="site-nav__item">
+                <a class="nav-link" href="{% url 'property_list' %}">Главная</a>
+              </li>
+              {% if user.is_authenticated %}
+                <li class="site-nav__item">
+                  <a class="nav-link" href="{% url 'favorite_properties' %}">Избранное</a>
+                </li>
+                <li class="site-nav__item nav-profile">
+                  <a class="nav-profile__link" href="{% url 'profile' %}">
+                    <span class="nav-profile__avatar">
+                      <img src="{{ user.profile.avatar.url }}" alt="Аватар {{ user.get_full_name|default:user.username }}" />
+                    </span>
+                    <span class="nav-profile__details">
+                      <span class="nav-profile__label">Профиль</span>
+                      <span class="nav-profile__name">{{ user.get_full_name|default:user.username }}</span>
+                    </span>
+                  </a>
+                </li>
+                <li class="site-nav__item">
+                  <a class="nav-link nav-link--logout" href="{% url 'logout' %}">Выход</a>
+                </li>
+              {% else %}
+                <li class="site-nav__item">
+                  <a class="nav-link nav-link--cta" href="{% url 'login' %}">Войти</a>
+                </li>
+              {% endif %}
             </ul>
           </nav>
         </div>

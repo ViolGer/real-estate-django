@@ -126,6 +126,11 @@ img {
   margin: 0;
 }
 
+.site-nav__item {
+  display: flex;
+  align-items: center;
+}
+
 .nav-link {
   position: relative;
   display: inline-flex;
@@ -157,6 +162,76 @@ img {
 .nav-link:hover,
 .nav-link:focus-visible {
   color: var(--color-text);
+}
+
+.nav-link--cta {
+  padding: 0.45rem 1.25rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-strong));
+  color: #01070f;
+  font-weight: 700;
+  box-shadow: 0 8px 16px rgba(59, 199, 155, 0.35);
+}
+
+.nav-link--cta:hover,
+.nav-link--cta:focus-visible {
+  color: #01070f;
+  transform: translateY(-1px);
+  box-shadow: 0 12px 20px rgba(59, 199, 155, 0.45);
+}
+
+.nav-profile__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.35rem 0;
+  text-decoration: none;
+  color: var(--color-text);
+}
+
+.nav-profile__avatar {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 42px;
+  width: 42px;
+  border-radius: 999px;
+  overflow: hidden;
+  box-shadow: 0 10px 20px rgba(8, 18, 28, 0.45);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.nav-profile__avatar img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.nav-profile__details {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.nav-profile__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  letter-spacing: 0.08em;
+}
+
+.nav-profile__name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.nav-profile__link:hover .nav-profile__name,
+.nav-profile__link:focus-visible .nav-profile__name {
+  color: var(--color-primary);
 }
 
 .nav-link:hover::after,
@@ -929,7 +1004,7 @@ main > * + * {
     transform: translateY(0);
   }
 
-  .nav-link {   
+  .nav-link {
     padding: 0.75rem 0.35rem;
     border-radius: var(--radius-md);
     justify-content: center;
@@ -937,6 +1012,20 @@ main > * + * {
 
   .nav-link::after {
     display: none;
+  }
+
+  .nav-link--cta {
+    justify-content: center;
+  }
+
+  .nav-profile__link {
+    padding: 0.75rem 0.5rem;
+    border-radius: var(--radius-md);
+    background: rgba(4, 13, 22, 0.65);
+  }
+
+  .nav-profile__details {
+    align-items: flex-start;
   }
 
   .content-area {
