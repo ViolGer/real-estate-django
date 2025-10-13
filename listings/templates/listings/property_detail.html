@@ -57,9 +57,22 @@
                     </button>
 
                     <script>
+                        function getCsrfToken() {
+                            const match = document.cookie.match(/(?:^|; )csrftoken=([^;]+)/);
+                            return match ? decodeURIComponent(match[1]) : '';
+                        }
+
                         function toggleFavorite(propertyId) {
                             const btn = document.getElementById('favorite-btn');
                             if (!btn) {
+                                return;
+                            }
+
+                            const csrfToken = getCsrfToken();
+                            if (!csrfToken) {
+                                console.warn('CSRF token was not found. Favorite action was skipped.');
+                                btn.classList.add('btn-shake');
+                                setTimeout(() => btn.classList.remove('btn-shake'), 600);
                                 return;
                             }
 
@@ -70,8 +83,9 @@
                             fetch(`/api/property/${propertyId}/favorite/`, {
                                 method: 'POST',
                                 headers: {
-                                    'X-CSRFToken': '{{ csrf_token }}',
-                                    'Content-Type': 'application/json'
+                                    'X-CSRFToken': csrfToken,
+                                    'Content-Type': 'application/json',
+                                    'X-Requested-With': 'XMLHttpRequest'
                                 },
                                 credentials: 'same-origin'
                             })
