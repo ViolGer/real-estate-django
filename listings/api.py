@@ -21,6 +21,18 @@ class ToggleFavoriteAPI(APIView):
 
         if not created:
             favorite.delete()
-            return Response({'message': 'Removed from favorites'}, status=status.HTTP_200_OK)
+            return Response(
+                {
+                    'status': 'removed',
+                    'message': 'Removed from favorites'
+                },
+                status=status.HTTP_200_OK
+            )
 
-        return Response({'message': 'Added to favorites'}, status=status.HTTP_201_CREATED)
+        return Response(
+            {
+                'status': 'added',
+                'message': 'Added to favorites'
+            },
+            status=status.HTTP_201_CREATED
+        )

@@ -49,12 +49,15 @@
                 <!-- Добавление в избранное -->
                 <button id="favorite-btn"
                         class="btn {% if is_favorite %}btn-warning{% else %}btn-outline-warning{% endif %} w-100 mb-2"
+                        data-added-label="★ Убрать из избранного"
+                        data-removed-label="☆ В избранное"
                         onclick="toggleFavorite({{ property.id }})">
                     {% if is_favorite %}★ Убрать из избранного{% else %}☆ В избранное{% endif %}
                 </button>
 
                 <script>
                     function toggleFavorite(propertyId) {
+                        const btn = document.getElementById('favorite-btn');
                         fetch(`/api/property/${propertyId}/favorite/`, {
                             method: 'POST',
                             headers: {
@@ -62,20 +65,19 @@
                                 'Content-Type': 'application/json'
                             }
                         })
-                        .then(response => response.json())
-                        .then(data => {
-                            const btn = document.getElementById('favorite-btn');
-                            if (data.status === 'added') {
-                                btn.innerText = '★ Убрать из избранного';
-                                btn.classList.remove('btn-outline-warning');
-                                btn.classList.add('btn-warning');
-                            } else {
-                                btn.innerText = '☆ В избранное';
-                                btn.classList.remove('btn-warning');
-                                btn.classList.add('btn-outline-warning');
-                            }
-                        })
-                        .catch(error => console.error('Ошибка при добавлении в избранное:', error));
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.status === 'added') {
+                                    btn.innerText = btn.dataset.addedLabel;
+                                    btn.classList.remove('btn-outline-warning');
+                                    btn.classList.add('btn-warning');
+                                } else if (data.status === 'removed') {
+                                    btn.innerText = btn.dataset.removedLabel;
+                                    btn.classList.remove('btn-warning');
+                                    btn.classList.add('btn-outline-warning');
+                                }
+                            })
+                            .catch(error => console.error('Ошибка при добавлении в избранное:', error));
                     }
                 </script>
 

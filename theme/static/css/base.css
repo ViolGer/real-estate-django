@@ -304,6 +304,43 @@ main > * + * {
   }
 }
 
+.favorite-empty {
+  min-height: 45vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem 3rem;
+}
+
+.empty-state-card {
+  max-width: 520px;
+  width: 100%;
+  padding: 2.5rem 2rem;
+  text-align: center;
+  background: rgba(15, 27, 42, 0.85);
+  border: 1px solid rgba(59, 199, 155, 0.25);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(6px);
+}
+
+.empty-icon {
+  font-size: 3rem;
+  line-height: 1;
+  margin-bottom: 1rem;
+  color: var(--color-primary);
+}
+
+.empty-title {
+  font-size: 1.8rem;
+  margin-bottom: 0.75rem;
+}
+
+.empty-text {
+  margin-bottom: 1.5rem;
+  color: var(--color-muted);
+}
+
 @media (max-width: 520px) {
   .brand {
     font-size: 1rem;
