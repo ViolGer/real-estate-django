@@ -1,9 +1,10 @@
 import pytest
+from datetime import timedelta
 from django.contrib.auth.models import User
 from django.urls import reverse
+from django.utils import timezone
 
 from listings.models import Property
-
 
 @pytest.fixture
 def user(db):
@@ -66,3 +67,55 @@ def test_property_list_excludes_unavailable(client, create_property):
     content = response.content.decode()
     assert 'Open House' in content
     assert 'Hidden Gem' not in content
+
+
+@pytest.mark.django_db
+def test_property_list_defaults_to_newest_first(client, create_property):
+    recent = create_property(title='Brand New Condo')
+    older = create_property(title='Vintage Loft')
+
+    Property.objects.filter(pk=older.pk).update(created_at=timezone.now() - timedelta(days=3))
+
+    response = client.get(reverse('property_list'))
+
+    assert response.status_code == 200
+    content = response.content.decode()
+    assert content.index('Brand New Condo') < content.index('Vintage Loft')
+
+
+@pytest.mark.django_db
+def test_property_list_sorts_by_area_desc(client, create_property):
+    spacious = create_property(title='Spacious Loft', area=180)
+    compact = create_property(title='Compact Studio', area=48)
+
+    response = client.get(reverse('property_list'), {'sort': 'area_desc'})
+
+    assert response.status_code == 200
+    content = response.content.decode()
+    assert content.index('Spacious Loft') < content.index('Compact Studio')
+
+
+@pytest.mark.django_db
+def test_property_list_sorts_by_area_asc(client, create_property):
+    spacious = create_property(title='Wide Villa', area=220)
+    compact = create_property(title='Tiny Flat', area=36)
+
+    response = client.get(reverse('property_list'), {'sort': 'area_asc'})
+
+    assert response.status_code == 200
+    content = response.content.decode()
+    assert content.index('Tiny Flat') < content.index('Wide Villa')
+
+
+@pytest.mark.django_db
+def test_property_list_sorts_by_oldest(client, create_property):
+    newer = create_property(title='New Tower')
+    older = create_property(title='Heritage House')
+
+    Property.objects.filter(pk=older.pk).update(created_at=timezone.now() - timedelta(days=7))
+
+    response = client.get(reverse('property_list'), {'sort': 'oldest'})
+
+    assert response.status_code == 200
+    content = response.content.decode()
+    assert content.index('Heritage House') < content.index('New Tower')

@@ -66,10 +66,12 @@ def property_detail_api(request, pk):
 
 # Главная страница со списком объектов
 PROPERTY_SORT_OPTIONS = [
-    ('newest', 'Сначала новые', '-created_at'),
-    ('price_desc', 'По убыванию цены', '-price'),
-    ('price_asc', 'По возрастанию цены', 'price'),
-    ('oldest', 'Сначала старые', 'created_at'),
+    ('newest', 'Дата добавления: сначала новые', '-created_at'),
+    ('oldest', 'Дата добавления: сначала старые', 'created_at'),
+    ('price_desc', 'Цена: по убыванию', '-price'),
+    ('price_asc', 'Цена: по возрастанию', 'price'),
+    ('area_desc', 'Площадь: по убыванию', '-area'),
+    ('area_asc', 'Площадь: по возрастанию', 'area'),
     ('title_asc', 'По алфавиту', 'title'),
 ]
 

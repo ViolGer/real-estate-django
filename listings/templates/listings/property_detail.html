@@ -147,6 +147,7 @@
                             </select>
                             <button type="submit" class="btn btn-outline-primary w-100">Добавить</button>
                         </form>
+                        <a href="{% url 'collection_list' %}" class="btn btn-outline-secondary w-100 mt-2">Мои подборки</a>
                     {% else %}
                         <p class="text-muted">У вас пока нет подборок. <a href="{% url 'collection_list' %}">Создать подборку</a></p>
                     {% endif %}

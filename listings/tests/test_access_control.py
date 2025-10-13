@@ -33,6 +33,8 @@ def test_navigation_for_anonymous_shows_login_only(client):
     assert reverse('login') in content
     assert 'Войти' in content
     assert reverse('favorite_properties') not in content
+    assert reverse('lesson_list') not in content
+    assert reverse('collection_list') not in content
 
 
 @pytest.mark.django_db
@@ -45,6 +47,8 @@ def test_navigation_for_authenticated_shows_avatar(client, owner):
     content = response.content.decode('utf-8')
 
     assert reverse('favorite_properties') in content
+    assert reverse('lesson_list') in content
+    assert reverse('collection_list') in content
     assert owner.profile.avatar.url in content
     assert owner.username in content or owner.get_full_name() in content
 
