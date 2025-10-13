@@ -2,11 +2,22 @@
 {% block title %}Избранное | Global Estate{% endblock %}
 
 {% block content %}
-<div class="property-container">
-    <h1 class="mb-5 text-center">🏘️ Избранные объекты</h1>
+<section class="property-catalog">
+    <header class="catalog-header catalog-header--centered">
+        <div class="catalog-header__titles">
+            <h1>🏘️ Избранные объекты</h1>
+            <p class="catalog-subtitle">
+                {% if properties %}
+                    В вашей подборке {{ properties|length }} {{ properties|length|pluralize:'объект,объекта,объектов' }}
+                {% else %}
+                    Сохраняйте понравившиеся объявления, чтобы вернуться к ним позже
+                {% endif %}
+            </p>
+        </div>
+    </header>
 
     {% if properties %}
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <div class="property-grid">
             {% for property in properties %}
                 {% include "listings/includes/property_card.html" %}
             {% endfor %}
@@ -21,5 +32,5 @@
             </div>
         </div>
     {% endif %}
-</div>
+</section>
 {% endblock %}

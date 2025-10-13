@@ -58,26 +58,52 @@
                 <script>
                     function toggleFavorite(propertyId) {
                         const btn = document.getElementById('favorite-btn');
+                        if (!btn) {
+                            return;
+                        }
+
+                        const initialLabel = btn.innerText;
+                        btn.disabled = true;
+                        btn.classList.add('is-loading');
+
                         fetch(`/api/property/${propertyId}/favorite/`, {
                             method: 'POST',
                             headers: {
                                 'X-CSRFToken': '{{ csrf_token }}',
                                 'Content-Type': 'application/json'
-                            }
+                            },
+                            credentials: 'same-origin'
                         })
-                            .then(response => response.json())
+                            .then(async (response) => {
+                                const data = await response.json();
+                                if (!response.ok) {
+                                    throw new Error(data?.message || 'Не удалось обновить избранное');
+                                }
+                                return data;
+                            })
                             .then(data => {
                                 if (data.status === 'added') {
                                     btn.innerText = btn.dataset.addedLabel;
+                                    btn.setAttribute('aria-pressed', 'true');
                                     btn.classList.remove('btn-outline-warning');
                                     btn.classList.add('btn-warning');
                                 } else if (data.status === 'removed') {
                                     btn.innerText = btn.dataset.removedLabel;
+                                    btn.setAttribute('aria-pressed', 'false');
                                     btn.classList.remove('btn-warning');
                                     btn.classList.add('btn-outline-warning');
                                 }
                             })
-                            .catch(error => console.error('Ошибка при добавлении в избранное:', error));
+                            .catch(error => {
+                                console.error('Ошибка при добавлении в избранное:', error);
+                                btn.innerText = initialLabel;
+                                btn.classList.add('btn-shake');
+                                setTimeout(() => btn.classList.remove('btn-shake'), 600);
+                            })
+                            .finally(() => {
+                                btn.disabled = false;
+                                btn.classList.remove('is-loading');
+                            });
                     }
                 </script>
 
