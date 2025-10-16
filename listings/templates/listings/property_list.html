@@ -2,17 +2,59 @@
 {% block title %}Объявления | Global Estate{% endblock %}
 
 {% block content %}
-<div class="property-container">
-    <h1 class="mb-5 text-center">🏘️ Доступные объекты недвижимости</h1>
+<section class="property-catalog">
+    <header class="catalog-header">
+        <div class="catalog-header__titles">
+            <h1>🏘️ Доступные объекты недвижимости</h1>
+            <p class="catalog-subtitle">
+                {% if results_count %}
+                    Найдено {{ results_count }} {{ results_count|pluralize:'объявление,объявления,объявлений' }}
+                {% else %}
+                    Подберите подходящий объект из нашей коллекции предложений
+                {% endif %}
+            </p>
+        </div>
 
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-        {% for property in properties %}
-            {% include "listings/includes/property_card.html" %}
-        {% empty %}
-            <div class="col">
-                <div class="alert alert-info">Объекты не найдены</div>
+        <form method="get" class="catalog-filters" role="search">
+            <div class="search-field">
+                <label for="property-search" class="sr-only">Поиск по названию, стране или городу</label>
+                <input
+                    id="property-search"
+                    type="search"
+                    name="q"
+                    value="{{ search_query }}"
+                    placeholder="Введите страну, город или название объекта"
+                >
+                <button type="submit" class="btn btn-green">Поиск</button>
             </div>
-        {% endfor %}
-    </div>
-</div>
+
+            <div class="select-field">
+                <label for="property-sort" class="sr-only">Сортировка объявлений</label>
+                <select id="property-sort" name="sort" onchange="this.form.submit()">
+                    {% for option in sort_options %}
+                        <option value="{{ option.value }}" {% if option.value == selected_sort %}selected{% endif %}>
+                            {{ option.label }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            {% if filters_active %}
+                <a class="filter-reset" href="{% url 'property_list' %}">Сбросить фильтры</a>
+            {% endif %}
+        </form>
+    </header>
+
+    {% if properties %}
+        <div class="property-grid">
+            {% for property in properties %}
+                {% include "listings/includes/property_card.html" %}
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="property-empty">
+            <div class="alert">Объекты не найдены. Попробуйте изменить параметры поиска.</div>
+        </div>
+    {% endif %}
+</section>
 {% endblock %}

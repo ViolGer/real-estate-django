@@ -1,11 +1,187 @@
 {% extends "base.html" %}
 {% block title %}Редактировать объявление{% endblock %}
 {% block content %}
-<h2>Редактировать объект</h2>
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-green">💾 Сохранить</button>
-    <a href="{% url 'dashboard' %}" class="btn btn-secondary">Отмена</a>
-</form>
+<section class="page-heading">
+  <p class="page-eyebrow">Управление объектом</p>
+  <h1 class="page-title">Редактирование «{{ form.instance.title|default:"Новый объект" }}»</h1>
+  <p class="page-subtitle">Обновите описание, финансовые параметры и медиа, чтобы предложение оставалось актуальным и привлекательным.</p>
+</section>
+
+<div class="edit-property-layout">
+  <div class="form-card">
+    <form method="post" enctype="multipart/form-data" class="form-stack">
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+      <div class="form-alert form-alert--error">
+        {% for error in form.non_field_errors %}
+        <p>{{ error }}</p>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <div class="form-section">
+        <div class="form-section__header">
+          <h2>Основная информация</h2>
+          <p>Расскажите покупателям, что делает объект уникальным.</p>
+        </div>
+        <div class="form-grid">
+          <div class="form-field form-field--full{% if form.title.errors %} has-error{% endif %}">
+            <label for="{{ form.title.id_for_label }}" class="form-label">{{ form.title.label }}</label>
+            {{ form.title }}
+            {% include "listings/includes/form_field_messages.html" with field=form.title %}
+          </div>
+          <div class="form-field form-field--full{% if form.description.errors %} has-error{% endif %}">
+            <label for="{{ form.description.id_for_label }}" class="form-label">{{ form.description.label }}</label>
+            {{ form.description }}
+            {% include "listings/includes/form_field_messages.html" with field=form.description %}
+          </div>
+          <div class="form-field form-field--full{% if form.image.errors %} has-error{% endif %}">
+            <label for="{{ form.image.id_for_label }}" class="form-label">Основное изображение</label>
+            {{ form.image }}
+            {% include "listings/includes/form_field_messages.html" with field=form.image %}
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section__header">
+          <h2>Локация</h2>
+          <p>Укажите страну, город и ключевые расстояния для покупателей.</p>
+        </div>
+        <div class="form-grid form-grid--two">
+          <div class="form-field{% if form.country.errors %} has-error{% endif %}">
+            <label for="{{ form.country.id_for_label }}" class="form-label">{{ form.country.label }}</label>
+            {{ form.country }}
+            {% include "listings/includes/form_field_messages.html" with field=form.country %}
+          </div>
+          <div class="form-field{% if form.city.errors %} has-error{% endif %}">
+            <label for="{{ form.city.id_for_label }}" class="form-label">{{ form.city.label }}</label>
+            {{ form.city }}
+            {% include "listings/includes/form_field_messages.html" with field=form.city %}
+          </div>
+          <div class="form-field{% if form.distance_to_center_m.errors %} has-error{% endif %}">
+            <label for="{{ form.distance_to_center_m.id_for_label }}" class="form-label">{{ form.distance_to_center_m.label }}</label>
+            {{ form.distance_to_center_m }}
+            {% include "listings/includes/form_field_messages.html" with field=form.distance_to_center_m %}
+          </div>
+          <div class="form-field{% if form.distance_to_airport_km.errors %} has-error{% endif %}">
+            <label for="{{ form.distance_to_airport_km.id_for_label }}" class="form-label">{{ form.distance_to_airport_km.label }}</label>
+            {{ form.distance_to_airport_km }}
+            {% include "listings/includes/form_field_messages.html" with field=form.distance_to_airport_km %}
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section__header">
+          <h2>Финансовые параметры</h2>
+          <p>Проверьте корректность стоимости, площади и статуса публикации.</p>
+        </div>
+        <div class="form-grid form-grid--three">
+          <div class="form-field{% if form.price.errors %} has-error{% endif %}">
+            <label for="{{ form.price.id_for_label }}" class="form-label">{{ form.price.label }}</label>
+            {{ form.price }}
+            {% include "listings/includes/form_field_messages.html" with field=form.price %}
+          </div>
+          <div class="form-field{% if form.currency.errors %} has-error{% endif %}">
+            <label for="{{ form.currency.id_for_label }}" class="form-label">{{ form.currency.label }}</label>
+            {{ form.currency }}
+            {% include "listings/includes/form_field_messages.html" with field=form.currency %}
+          </div>
+          <div class="form-field{% if form.area.errors %} has-error{% endif %}">
+            <label for="{{ form.area.id_for_label }}" class="form-label">{{ form.area.label }}</label>
+            {{ form.area }}
+            {% include "listings/includes/form_field_messages.html" with field=form.area %}
+          </div>
+          <div class="form-field{% if form.roi_percent.errors %} has-error{% endif %}">
+            <label for="{{ form.roi_percent.id_for_label }}" class="form-label">{{ form.roi_percent.label }}</label>
+            {{ form.roi_percent }}
+            {% include "listings/includes/form_field_messages.html" with field=form.roi_percent %}
+          </div>
+          <div class="form-field{% if form.ownership_type.errors %} has-error{% endif %}">
+            <label for="{{ form.ownership_type.id_for_label }}" class="form-label">{{ form.ownership_type.label }}</label>
+            {{ form.ownership_type }}
+            {% include "listings/includes/form_field_messages.html" with field=form.ownership_type %}
+          </div>
+        </div>
+        <div class="form-grid form-grid--auto">
+          <div class="form-field form-field--checkbox{% if form.is_available.errors %} has-error{% endif %}">
+            <label for="{{ form.is_available.id_for_label }}" class="form-checkbox-label">
+              {{ form.is_available }}
+              <span>{{ form.is_available.label }}</span>
+            </label>
+            {% include "listings/includes/form_field_messages.html" with field=form.is_available %}
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section__header">
+          <h2>Комфорт и сервис</h2>
+          <p>Отметьте дополнительные преимущества, которые повысят интерес клиента.</p>
+        </div>
+        <div class="form-grid form-grid--auto">
+          <div class="form-field form-field--checkbox{% if form.is_furnished.errors %} has-error{% endif %}">
+            <label for="{{ form.is_furnished.id_for_label }}" class="form-checkbox-label">
+              {{ form.is_furnished }}
+              <span>{{ form.is_furnished.label }}</span>
+            </label>
+            {% include "listings/includes/form_field_messages.html" with field=form.is_furnished %}
+          </div>
+          <div class="form-field form-field--checkbox{% if form.has_management_company.errors %} has-error{% endif %}">
+            <label for="{{ form.has_management_company.id_for_label }}" class="form-checkbox-label">
+              {{ form.has_management_company }}
+              <span>{{ form.has_management_company.label }}</span>
+            </label>
+            {% include "listings/includes/form_field_messages.html" with field=form.has_management_company %}
+          </div>
+          <div class="form-field form-field--checkbox{% if form.has_guaranteed_income.errors %} has-error{% endif %}">
+            <label for="{{ form.has_guaranteed_income.id_for_label }}" class="form-checkbox-label">
+              {{ form.has_guaranteed_income }}
+              <span>{{ form.has_guaranteed_income.label }}</span>
+            </label>
+            {% include "listings/includes/form_field_messages.html" with field=form.has_guaranteed_income %}
+          </div>
+        </div>
+        <div class="form-grid form-grid--two">
+          <div class="form-field{% if form.yutree_score.errors %} has-error{% endif %}">
+            <label for="{{ form.yutree_score.id_for_label }}" class="form-label">{{ form.yutree_score.label }}</label>
+            {{ form.yutree_score }}
+            {% include "listings/includes/form_field_messages.html" with field=form.yutree_score %}
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-green">💾 Сохранить изменения</button>
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">Отмена</a>
+      </div>
+    </form>
+  </div>
+
+  <aside class="form-sidebar">
+    <div class="form-sidebar__card">
+      <h3>Превью объявления</h3>
+      {% if form.instance.image %}
+      <div class="form-preview">
+        <img src="{{ form.instance.image.url }}" alt="Текущее изображение объекта" />
+      </div>
+      {% else %}
+      <div class="form-preview form-preview--empty">
+        <span>Изображение появится после загрузки</span>
+      </div>
+      {% endif %}
+      <p class="form-sidebar__text">После сохранения карточка обновится на главной странице и в подборках.</p>
+    </div>
+    <div class="form-sidebar__card form-sidebar__card--tips">
+      <h3>Советы по оформлению</h3>
+      <ul class="form-tips">
+        <li>Пишите в описании ключевые преимущества и инфраструктуру.</li>
+        <li>Загружайте горизонтальные фото в хорошем разрешении.</li>
+        <li>Следите за актуальностью стоимости и статуса объекта.</li>
+      </ul>
+    </div>
+  </aside>
+</div>
 {% endblock %}

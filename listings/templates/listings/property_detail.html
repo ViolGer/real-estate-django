@@ -47,53 +47,114 @@
                 </div>
 
                 <!-- Добавление в избранное -->
-                <button id="favorite-btn"
-                        class="btn {% if is_favorite %}btn-warning{% else %}btn-outline-warning{% endif %} w-100 mb-2"
-                        onclick="toggleFavorite({{ property.id }})">
-                    {% if is_favorite %}★ Убрать из избранного{% else %}☆ В избранное{% endif %}
-                </button>
+                {% if user.is_authenticated %}
+                    <button id="favorite-btn"
+                            class="btn {% if is_favorite %}btn-warning{% else %}btn-outline-warning{% endif %} w-100 mb-2"
+                            data-added-label="★ Убрать из избранного"
+                            data-removed-label="☆ В избранное"
+                            onclick="toggleFavorite({{ property.id }})">
+                        {% if is_favorite %}★ Убрать из избранного{% else %}☆ В избранное{% endif %}
+                    </button>
 
-                <script>
-                    function toggleFavorite(propertyId) {
-                        fetch(`/api/property/${propertyId}/favorite/`, {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRFToken': '{{ csrf_token }}',
-                                'Content-Type': 'application/json'
-                            }
-                        })
-                        .then(response => response.json())
-                        .then(data => {
+                    <script>
+                        function getCsrfToken() {
+                            const match = document.cookie.match(/(?:^|; )csrftoken=([^;]+)/);
+                            return match ? decodeURIComponent(match[1]) : '';
+                        }
+
+                        function toggleFavorite(propertyId) {
                             const btn = document.getElementById('favorite-btn');
-                            if (data.status === 'added') {
-                                btn.innerText = '★ Убрать из избранного';
-                                btn.classList.remove('btn-outline-warning');
-                                btn.classList.add('btn-warning');
-                            } else {
-                                btn.innerText = '☆ В избранное';
-                                btn.classList.remove('btn-warning');
-                                btn.classList.add('btn-outline-warning');
+                            if (!btn) {
+                                return;
                             }
-                        })
-                        .catch(error => console.error('Ошибка при добавлении в избранное:', error));
-                    }
-                </script>
 
-                <a href="{% url 'generate_presentation' property.id %}" class="btn btn-success mb-2">Сформировать презентацию</a>
-                <!-- Добавление в подборку -->
-                <h6 class="fw-bold mt-4">Добавить в подборку</h6>
-                {% if collections %}
-                    <form method="post" action="{% url 'add_to_collection' property.id %}">
-                        {% csrf_token %}
-                        <select name="collection_id" class="form-select mb-2">
-                            {% for collection in collections %}
-                                <option value="{{ collection.id }}">{{ collection.name }}</option>
-                            {% endfor %}
-                        </select>
-                        <button type="submit" class="btn btn-outline-primary w-100">Добавить</button>
-                    </form>
+                            const csrfToken = getCsrfToken();
+                            if (!csrfToken) {
+                                console.warn('CSRF token was not found. Favorite action was skipped.');
+                                btn.classList.add('btn-shake');
+                                setTimeout(() => btn.classList.remove('btn-shake'), 600);
+                                return;
+                            }
+
+                            const initialLabel = btn.innerText;
+                            btn.disabled = true;
+                            btn.classList.add('is-loading');
+
+                            fetch(`/api/property/${propertyId}/favorite/`, {
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRFToken': csrfToken,
+                                    'Content-Type': 'application/json',
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                },
+                                credentials: 'same-origin'
+                            })
+                                .then(async (response) => {
+                                    const data = await response.json();
+                                    if (!response.ok) {
+                                        throw new Error(data?.message || 'Не удалось обновить избранное');
+                                    }
+                                    return data;
+                                })
+                                .then(data => {
+                                    if (data.status === 'added') {
+                                        btn.innerText = btn.dataset.addedLabel;
+                                        btn.setAttribute('aria-pressed', 'true');
+                                        btn.classList.remove('btn-outline-warning');
+                                        btn.classList.add('btn-warning');
+                                    } else if (data.status === 'removed') {
+                                        btn.innerText = btn.dataset.removedLabel;
+                                        btn.setAttribute('aria-pressed', 'false');
+                                        btn.classList.remove('btn-warning');
+                                        btn.classList.add('btn-outline-warning');
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Ошибка при добавлении в избранное:', error);
+                                    btn.innerText = initialLabel;
+                                    btn.classList.add('btn-shake');
+                                    setTimeout(() => btn.classList.remove('btn-shake'), 600);
+                                })
+                                .finally(() => {
+                                    btn.disabled = false;
+                                    btn.classList.remove('is-loading');
+                                });
+                        }
+                    </script>
                 {% else %}
-                    <p class="text-muted">У вас пока нет подборок. <a href="{% url 'collection_list' %}">Создать подборку</a></p>
+                    <a class="btn btn-outline-warning w-100 mb-2" href="{% url 'login' %}?next={% url 'property_detail' property.id %}">
+                        Войдите, чтобы добавить в избранное
+                    </a>
+                {% endif %}
+
+                {% if user.is_authenticated %}
+                    <a href="{% url 'generate_presentation' property.id %}" class="btn btn-success mb-2">Сформировать презентацию</a>
+                {% else %}
+                    <a href="{% url 'login' %}?next={% url 'property_detail' property.id %}" class="btn btn-success mb-2">
+                        Войдите, чтобы сформировать презентацию
+                    </a>
+                {% endif %}
+                <!-- Добавление в подборку -->
+                {% if user.is_authenticated %}
+                    <h6 class="fw-bold mt-4">Добавить в подборку</h6>
+                    {% if collections %}
+                        <form method="post" action="{% url 'add_to_collection' property.id %}">
+                            {% csrf_token %}
+                            <select name="collection_id" class="form-select mb-2">
+                                {% for collection in collections %}
+                                    <option value="{{ collection.id }}">{{ collection.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit" class="btn btn-outline-primary w-100">Добавить</button>
+                        </form>
+                        <a href="{% url 'collection_list' %}" class="btn btn-outline-secondary w-100 mt-2">Мои подборки</a>
+                    {% else %}
+                        <p class="text-muted">У вас пока нет подборок. <a href="{% url 'collection_list' %}">Создать подборку</a></p>
+                    {% endif %}
+                {% else %}
+                    <div class="alert alert-info mt-4">
+                        Авторизуйтесь, чтобы сохранять объекты в подборки и работать с избранным.
+                    </div>
                 {% endif %}
 
                 <button class="btn btn-green w-100 mb-2">Показать телефон</button>

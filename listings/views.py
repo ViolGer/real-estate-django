@@ -1,6 +1,5 @@
-from gc import get_objects
-
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
 
 from property_collections.models import PropertyCollection
@@ -9,7 +8,6 @@ from .forms import PropertyForm
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializers import PropertySerializer
-from django.shortcuts import get_object_or_404
 from achievements.models import UserBadge
 
 from django.http import HttpResponse
@@ -67,17 +65,64 @@ def property_detail_api(request, pk):
     return Response(serializer.data)
 
 # Главная страница со списком объектов
+PROPERTY_SORT_OPTIONS = [
+    ('newest', 'Дата добавления: сначала новые', '-created_at'),
+    ('oldest', 'Дата добавления: сначала старые', 'created_at'),
+    ('price_desc', 'Цена: по убыванию', '-price'),
+    ('price_asc', 'Цена: по возрастанию', 'price'),
+    ('area_desc', 'Площадь: по убыванию', '-area'),
+    ('area_asc', 'Площадь: по возрастанию', 'area'),
+    ('title_asc', 'По алфавиту', 'title'),
+]
+
+
 def property_list(request):
-    properties = Property.objects.filter(is_available=True).order_by('-created_at')
-    return render(request, 'listings/property_list.html', {'properties': properties})
+    queryset = Property.objects.filter(is_available=True)
+
+    search_query = request.GET.get('q', '').strip()
+    if search_query:
+        queryset = queryset.filter(
+            Q(title__icontains=search_query)
+            | Q(description__icontains=search_query)
+            | Q(city__icontains=search_query)
+            | Q(country__icontains=search_query)
+        )
+
+    sort_key = request.GET.get('sort', PROPERTY_SORT_OPTIONS[0][0])
+    sort_map = {value: ordering for value, _label, ordering in PROPERTY_SORT_OPTIONS}
+    ordering = sort_map.get(sort_key, PROPERTY_SORT_OPTIONS[0][2])
+    queryset = queryset.order_by(ordering)
+
+    properties = list(queryset)
+    selected_sort = sort_key if sort_key in sort_map else PROPERTY_SORT_OPTIONS[0][0]
+
+    context = {
+        'properties': properties,
+        'search_query': search_query,
+        'selected_sort': selected_sort,
+        'sort_options': [
+            {'value': value, 'label': label}
+            for value, label, _ordering in PROPERTY_SORT_OPTIONS
+        ],
+        'results_count': len(properties),
+        'filters_active': bool(search_query) or selected_sort != PROPERTY_SORT_OPTIONS[0][0],
+    }
+
+    return render(request, 'listings/property_list.html', context)
 
 # Детали объекта
-@login_required
 def property_detail(request, pk):
     property = get_object_or_404(Property, pk=pk)
-    is_favorite = Favorite.objects.filter(user=request.user, property=property).exists()
-    user_badges = UserBadge.objects.filter(user=request.user)
-    collections = PropertyCollection.objects.filter(user=request.user)
+
+    is_favorite = False
+    user_badges = UserBadge.objects.none()
+    collections = PropertyCollection.objects.none()
+
+    if request.user.is_authenticated:
+        is_favorite = Favorite.objects.filter(user=request.user, property=property).exists()
+        user_badges = UserBadge.objects.filter(user=request.user)
+        collections = PropertyCollection.objects.filter(user=request.user)
+
     return render(request, 'listings/property_detail.html', {
         'property': property,
         'is_favorite': is_favorite,

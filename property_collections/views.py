@@ -89,10 +89,11 @@ def edit_collection(request, pk):
 
 @login_required
 def favorite_properties(request):
-    favorites = Favorite.objects.filter(user=request.user).select_related('property')
+    favorites = Favorite.objects.filter(user=request.user).select_related('property').order_by('-created_at')
     properties = [fav.property for fav in favorites]
     return render(request, 'property_collections/favorite_properties.html', {
-        'properties': properties
+        'properties': properties,
+        'empty_message': 'У вас пока нет избранных объектов. Добавьте понравившиеся объявления, чтобы быстро находить их позже.'
     })
 
 @login_required
