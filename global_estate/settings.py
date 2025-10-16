@@ -105,7 +105,15 @@ SECRET_KEY = os.getenv(
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DJANGO_DEBUG", "False").lower() in {"true", "1", "yes"}
+DEBUG = os.getenv("DJANGO_DEBUG", "True").lower() in {"true", "1", "yes"}
+
+_whitenoise_env = os.getenv("DJANGO_USE_WHITENOISE")
+USE_WHITENOISE = False
+if WHITENOISE_INSTALLED:
+    if _whitenoise_env is None:
+        USE_WHITENOISE = not DEBUG
+    else:
+        USE_WHITENOISE = _whitenoise_env.lower() in {"true", "1", "yes"}
 
 default_hosts = ["localhost", "127.0.0.1"]
 ALLOWED_HOSTS = [
@@ -155,7 +163,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
 ]
 
-if WHITENOISE_INSTALLED:
+if USE_WHITENOISE:
     MIDDLEWARE.append('whitenoise.middleware.WhiteNoiseMiddleware')
 
 MIDDLEWARE += [
@@ -242,14 +250,11 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 default_static_backend = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
-if os.getenv("DJANGO_USE_MANIFEST_STATIC", "False").lower() in {"true", "1", "yes"}:
+if not DEBUG and os.getenv("DJANGO_USE_MANIFEST_STATIC", "False").lower() in {"true", "1", "yes"}:
     default_static_backend = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
-if WHITENOISE_INSTALLED:
+if USE_WHITENOISE:
     default_static_backend = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-if os.getenv("PYTEST_CURRENT_TEST"):
-    default_static_backend = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 STORAGES = {
     'default': {
