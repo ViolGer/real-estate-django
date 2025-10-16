@@ -12,21 +12,115 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+from urllib.parse import urlparse
+
+try:
+    import dj_database_url  # type: ignore
+except ModuleNotFoundError:  # pragma: no cover - optional dependency for production
+    dj_database_url = None
+
+
+try:
+    from dotenv import load_dotenv  # type: ignore
+except ModuleNotFoundError:  # pragma: no cover - optional dependency for production
+    def load_dotenv(path=None):
+        """Minimal .env loader used when python-dotenv is unavailable."""
+
+        if not path:
+            return False
+        env_path = Path(path)
+        if not env_path.exists():
+            return False
+
+        for line in env_path.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue
+            if "=" not in line:
+                continue
+            key, value = line.split("=", 1)
+            os.environ.setdefault(key.strip(), value.strip())
+        return True
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+load_dotenv(BASE_DIR / ".env")
+
+
+try:
+    import whitenoise  # type: ignore  # noqa: F401
+
+    WHITENOISE_INSTALLED = True
+except ModuleNotFoundError:  # pragma: no cover - optional dependency for production
+    WHITENOISE_INSTALLED = False
+
+
+def parse_database_url(url: str, conn_max_age: int = 0, ssl_require: bool = False):
+    """Parse database URLs without requiring dj-database-url at runtime."""
+
+    if dj_database_url:
+        return dj_database_url.parse(url, conn_max_age=conn_max_age, ssl_require=ssl_require)
+
+    parsed = urlparse(url)
+    scheme = parsed.scheme
+
+    if scheme in {"postgres", "postgresql"}:
+        config = {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": parsed.path[1:],
+            "USER": parsed.username or "",
+            "PASSWORD": parsed.password or "",
+            "HOST": parsed.hostname or "",
+            "PORT": str(parsed.port or ""),
+            "CONN_MAX_AGE": conn_max_age,
+        }
+        if ssl_require:
+            config["OPTIONS"] = {"sslmode": "require"}
+        return config
+
+    if scheme in {"sqlite", "sqlite3"}:
+        db_path = parsed.path
+        if db_path.startswith("/"):
+            db_path = db_path[1:]
+        if not db_path:
+            db_path = ":memory:"
+        return {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": db_path,
+            "CONN_MAX_AGE": conn_max_age,
+        }
+
+    raise ValueError(f"Unsupported database scheme: {scheme}")
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-k22_%!wx5)3(k11pg5bcf+v@&-tp8tfsy^t()^fx7cb0wk73ht'
+SECRET_KEY = os.getenv(
+    "DJANGO_SECRET_KEY",
+    "django-insecure-k22_%!wx5)3(k11pg5bcf+v@&-tp8tfsy^t()^fx7cb0wk73ht",
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DJANGO_DEBUG", "False").lower() in {"true", "1", "yes"}
 
-ALLOWED_HOSTS = []
+default_hosts = ["localhost", "127.0.0.1"]
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.getenv("DJANGO_ALLOWED_HOSTS", ",".join(default_hosts)).split(",")
+    if host.strip()
+]
+if not ALLOWED_HOSTS:
+    ALLOWED_HOSTS = default_hosts
+
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in os.getenv("DJANGO_CSRF_TRUSTED_ORIGINS", "").split(",")
+    if origin.strip()
+]
 
 
 # Application definition
@@ -59,6 +153,12 @@ NPM_BIN_PATH = "C:/Program Files/nodejs/npm.cmd"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+]
+
+if WHITENOISE_INSTALLED:
+    MIDDLEWARE.append('whitenoise.middleware.WhiteNoiseMiddleware')
+
+MIDDLEWARE += [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -137,7 +237,28 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-STATICFILES_DIRS = [BASE_DIR / 'theme' / 'static' ]
+STATICFILES_DIRS = [BASE_DIR / 'theme' / 'static']
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+default_static_backend = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+
+if os.getenv("DJANGO_USE_MANIFEST_STATIC", "False").lower() in {"true", "1", "yes"}:
+    default_static_backend = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
+
+if WHITENOISE_INSTALLED:
+    default_static_backend = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+if os.getenv("PYTEST_CURRENT_TEST"):
+    default_static_backend = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+
+STORAGES = {
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+    },
+    'staticfiles': {
+        'BACKEND': default_static_backend,
+    },
+}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -159,8 +280,30 @@ DEFAULT_FROM_EMAIL = 'noreply@globalestate.com'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
 }
+
+DATABASE_URL = os.getenv("DATABASE_URL")
+if DATABASE_URL:
+    DATABASES["default"] = parse_database_url(
+        DATABASE_URL,
+        conn_max_age=600,
+        ssl_require=not DEBUG,
+    )
+
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SECURE_HSTS_SECONDS = int(os.getenv("DJANGO_SECURE_HSTS_SECONDS", 3600))
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_SSL_REDIRECT = os.getenv("DJANGO_SECURE_SSL_REDIRECT", "False").lower() in {
+        "true",
+        "1",
+        "yes",
+    }
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 

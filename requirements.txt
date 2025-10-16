@@ -5,6 +5,12 @@ djangorestframework-simplejwt>=5.3
 # Tailwind CSS
 django-tailwind>=3.6
 
+# Deployment tooling
+gunicorn>=21.2
+whitenoise>=6.7
+dj-database-url>=2.2
+python-dotenv>=1.0
+
 # Тестирование
 pytest>=8.0
 pytest-django>=4.5
