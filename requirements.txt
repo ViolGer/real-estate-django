@@ -13,3 +13,9 @@ pytest-django>=4.5
 Pillow>=10.0
 
 ipython   # для удобной работы в shell
+
+gunicorn
+whitenoise
+psycopg2-binary
+dj-database-url
+python-dotenv  # опционально
